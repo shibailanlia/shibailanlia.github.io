@@ -1047,7 +1047,7 @@ function openLogin(){
   $('#liWx').onclick=()=>toast('微信授权登录…');
   $('#liLogin').onclick=()=>{
     const u=$('#liUser').value.trim(), p=$('#liPwd').value.trim();
-    if(!/^\d{17}[\dXx]$/.test(u)){ toast('账号必须为18位（身份证号）'); return; }
+    if(!/^(\d{17}[\dXx]|2\d{10})$/.test(u)){ toast('账号须为18位身份证号，或11位以2开头的学号'); return; }
     if(!/^.{6}$/.test(p)){ toast('密码必须为6位'); return; }
     // 模拟登录：写入真实学生信息
     store.set('user',{username:REAL.xuehao,name:REAL.name,avatar:'',gender:REAL.gender,birthday:REAL.birthday,sfz:REAL.sfz,
