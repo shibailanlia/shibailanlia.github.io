@@ -38,7 +38,8 @@
   /* 手机外壳 */
   #phone{
     position:relative;
-    width:100%;max-width:430px;
+    width:100%;max-width:390px;
+    flex:0 0 auto;
     height:100vh;
     height:100dvh;
     height:calc(var(--vh,1vh) * 100);
@@ -103,7 +104,7 @@
   }
   .header-left-name h5{
     margin-right:.875rem;
-    font-size:1.25rem;font-style:italic;
+    font-size:1.25rem;font-style:italic;white-space:nowrap;
     background-image:linear-gradient(180deg,#fffbf5,#ffc999);
     -webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;text-fill-color:transparent;
@@ -150,11 +151,11 @@
   .often-scroll-view::-webkit-scrollbar{display:none;}
   .often-scroll-view-const{display:inline-block;}
   .often-scroll-view-itme{
-    margin-left:1.25rem;width:3.125rem;min-height:5.9375rem;
+    margin-left:1.25rem;width:auto;min-width:3.125rem;min-height:5.9375rem;padding:0 .1875rem;
     display:flex;justify-content:center;align-items:center;flex-direction:column;
   }
   .often-scroll-view-img{width:1.5625rem;height:1.5625rem;margin-bottom:.625rem;object-fit:contain;display:block;}
-  .often-scroll-view-itme-p{white-space:normal;width:3.125rem;min-height:1.25rem;font-size:.75rem;text-align:center;line-height:normal;color:#333;margin:0;}
+  .often-scroll-view-itme-p{white-space:nowrap;width:auto;min-width:3.125rem;min-height:1.25rem;font-size:.75rem;text-align:center;line-height:normal;color:#333;margin:0;}
   .scrllbar{height:.625rem;width:4.375rem;position:absolute;top:87%;left:40%;border-radius:.625rem;background:rgba(164,18,28,.1);}
   .scrllbar-background{border-radius:.625rem;height:.625rem;width:4.375rem;background:rgba(164,18,28,.9);transition:transform .1s ease-in-out;}
 
@@ -559,13 +560,19 @@
     background:rgba(0,0,0,.78);color:#fff;font-size:14px;padding:12px 20px;border-radius:8px;
     z-index:999;max-width:70%;text-align:center;display:none;
   }
-  /* 页面切换加载 */
-  #loading{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.86);
-    display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:880;}
-  #loading.on{display:flex;}
-  #loading .spin{width:32px;height:32px;border:3px solid rgba(170,0,0,.15);border-top-color:var(--primary);
+  /* 页面切换加载（仿真实站：顶部标题条 + 中间深灰方块） */
+  #loading{position:absolute;top:0;left:0;right:0;bottom:0;background:#fff;
+    display:none;z-index:880;}
+  #loading.on{display:block;}
+  #loading .bar{display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:22px 0;font-size:20px;color:#666;}
+  #loading .bar .spin{width:26px;height:26px;border:3px solid #ddd;border-top-color:#999;
     border-radius:50%;animation:ldspin .8s linear infinite;}
-  #loading .lt{font-size:13px;color:#999;letter-spacing:1px;}
+  #loading .mask2{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+    width:130px;height:96px;background:rgba(70,70,70,.85);border-radius:6px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:15px;}
+  #loading .mask2 .dots{width:26px;height:10px;border-radius:2px;
+    background:radial-gradient(circle,#fff 1.6px,transparent 1.8px) 0 0/9px 9px repeat-x;opacity:.95;}
   @keyframes ldspin{to{transform:rotate(360deg);}}
   /* 弹窗 */
   .mask{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;}
@@ -603,7 +610,10 @@
   </div>
   <div id="tabbar"></div>
   <div id="sub"></div>
-  <div id="loading"><div class="spin"></div><div class="lt">加载中…</div></div>
+  <div id="loading">
+    <div class="bar"><span class="spin"></span><span>加载中 ...</span></div>
+    <div class="mask2"><span class="dots"></span><span>请稍候...</span></div>
+  </div>
   <div id="toast"></div>
 </div>
 <script>
@@ -2119,7 +2129,9 @@ function hideLoading(){ const el=$('#loading'); if(el) el.classList.remove('on')
 // 根字号：与真实站一致（uni-app 规则 1rem = 视口宽/375 * 16）
 (function(){
   function setRoot(){
-    var w=Math.min(window.innerWidth||375,750);
+    var w=window.innerWidth||375;
+    // 桌面浏览器（宽屏）固定 16px，保持手机比例；移动端按视口等比
+    if(w>560){ document.documentElement.style.fontSize='16px'; return; }
     document.documentElement.style.fontSize=(w/375*16)+'px';
   }
   setRoot();
