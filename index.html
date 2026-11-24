@@ -285,7 +285,17 @@
   .sub-nav .back{width:46px;height:50px;display:flex;align-items:center;justify-content:center;}
   .sub-nav .back svg{width:24px;height:24px;}
   .sub-nav .nav-title{position:absolute;left:50%;transform:translateX(-50%);font-size:17px;font-weight:600;}
-  .sub-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .set-page{background:#fafafa;min-height:100%;}
+.set-nav{height:2.1rem;background:#f8f8f8;display:flex;align-items:center;padding:0 .3rem 0 .3rem;color:#333;font-size:.81rem;}
+.set-nav .back{width:auto;height:auto;margin-right:0;display:flex;align-items:center;}
+.set-nav .back svg{width:1rem;height:1rem;}
+.set-nav .set-title{margin-left:.85rem;font-size:.81rem;}
+.set-list{background:#fff;}
+.set-cell{display:flex;align-items:center;height:3.12rem;padding:0 1.43rem;font-size:.875rem;color:#333;border-bottom:1px solid #f5f7f8;box-sizing:border-box;}
+.set-cell:last-child{border-bottom:1px solid #f0f3f4;height:3.215rem;}
+.set-cell .ic{width:1.43rem;height:1.43rem;margin-right:.43rem;}
+.set-cell .ver{margin-left:auto;color:#666;font-size:.9375rem;}
+.sub-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
   /* 表单 */
   .form-card{background:#fff;margin:10px;border-radius:10px;overflow:hidden;}
@@ -1064,7 +1074,7 @@ function rMine(){
   `;
 }
 function bindMine(){
-  const set=$('[data-setting]'); if(set) set.onclick=()=>toast('设置功能部署中…');
+  const set=$('[data-setting]'); if(set) set.onclick=()=>openSettings();
   const edit=$('[data-edit]'); if(edit) edit.onclick=()=>{ const u=user(); if(u) openEditInfo(); else openLogin(); };
   document.querySelectorAll('.h-item').forEach(el=>{
     el.onclick=()=>openHelp(el.dataset.h);
@@ -1080,6 +1090,24 @@ function bindMine(){
 
 /* ===================== 登录页 ===================== */
 const WX_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.7 3C4.9 3 2 5.5 2 8.6c0 1.8 1 3.3 2.6 4.4l-.6 1.9 2.2-1.1c.8.2 1.6.3 2.5.3h.5a4.6 4.6 0 0 1-.2-1.4c0-3 2.8-5.3 6.3-5.3h.5C15.3 4.7 12.3 3 8.7 3zm-2.3 4c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9zm4.6 0c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9z"/><path d="M22 13.2c0-2.6-2.5-4.7-5.6-4.7s-5.6 2.1-5.6 4.7 2.5 4.7 5.6 4.7c.7 0 1.3-.1 1.9-.3l1.8.9-.5-1.6c1.4-1 2.4-2.3 2.4-3.7zm-7.4-.8c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7zm3.7 0c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7z"/></svg>';
+function openSettings(){
+  openSub(`<div class="sub-page set-page">
+    <div class="set-nav"><div class="back" id="subBack">${I.back}</div><div class="set-title">设置</div></div>
+    <div class="set-list">
+      <div class="set-cell" id="setClear"><img class="ic" src="assets/real_weixiurenwu-OTFkAbd8.png" alt=""><span>点击清理学工缓存</span></div>
+      <div class="set-cell"><img class="ic" src="assets/real_version-BDo9CG2R.png" alt=""><span>当前版本</span><span class="ver">1.0.0</span></div>
+    </div>
+  </div>`);
+  bindBack();
+  const c=$('#setClear'); if(c) c.onclick=()=>{
+    const u=user();
+    Object.keys(localStorage).forEach(k=>{
+      if(k==='user'||k.startsWith('prof_')) return;
+      if(k.startsWith('u_')||k.startsWith('dsh')) localStorage.removeItem(k);
+    });
+    toast('已清理学工缓存');
+  };
+}
 function openLogin(){
   openSub(`
   <div class="sub-page" style="background:#fff;">
