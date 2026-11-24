@@ -51,7 +51,7 @@
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     background:#fafafa url("assets/mobileHeader.png") no-repeat top center;
-    background-size:cover;
+    background-size:100% auto;
   }
   #viewport.no-tabbar{bottom:0;}
   #page{padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom));min-height:100%;}
@@ -202,13 +202,18 @@
   .news-item .ni-body .ni-desc{font-size:13px;color:#888;}
 
   /* ========== 我的 ========== */
-  .mine-wrap{padding:0 14px;}
+    #page.mine-page{background-color:#fff;background-image:linear-gradient(180deg,
+    rgb(173,10,10) 0%, rgb(181,40,42) 8%, rgb(191,71,73) 12%, rgb(202,101,106) 16.7%,
+    rgb(174,19,31) 18%, rgb(185,69,77) 33.3%, rgb(229,152,158) 41.7%, rgb(251,200,202) 50%,
+    rgb(254,206,210) 66.7%, rgb(255,231,232) 83.3%, #fff 100%);
+    background-size:100% 600px;background-repeat:no-repeat;min-height:100%;}
+.mine-wrap{padding:0 1.08rem;}
   .mine-profile{
     margin-top:40px;background:rgba(255,255,255,.95);border-radius:12px;
     padding:52px 20px 20px;position:relative;min-height:120px;
   }
   .mine-avatar{
-    position:absolute;top:-3.42rem;left:42px;width:4.219rem;height:4.219rem;border-radius:50%;
+    position:absolute;top:-3.42rem;left:38px;width:4.219rem;height:4.219rem;border-radius:50%;
     overflow:hidden;background:#eef1f5;
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 8px rgba(0,0,0,.08);
@@ -223,7 +228,7 @@
     border:1px solid var(--primary);color:var(--primary);
     font-size:.75rem;border-radius:.3125rem;padding:.2rem .1625rem;line-height:1.2;background:transparent;
   }
-  .mine-help{margin-top:2.157rem;background:rgba(255,255,255,.92);border-radius:10px;padding:.68rem 6px 1rem;}
+  .mine-help{margin-top:1.917rem;background:rgba(255,255,255,.8);border-radius:.625rem;padding:.68rem 7px 1.6rem;}
   .mine-help .mh-head{display:flex;align-items:center;font-size:1rem;font-weight:400;padding:0 10px 14px;border-bottom:1px solid rgba(164,18,28,.18);}
   .mine-help .mh-head svg,.mine-help .mh-head img.ic{width:1.346rem;height:1.346rem;margin-right:.3rem;color:var(--primary);}
   .mine-help-grid{display:flex;margin-top:.28rem;}
@@ -750,6 +755,7 @@ function switchTab(key){
 function renderPage(){
   const page=$('#page');
   page.classList.remove('pad0');
+  page.classList.toggle('mine-page',currentTab==='mine');
   const map={home:rHome,apps:rApps,news:rNews,mine:rMine};
   page.innerHTML=map[currentTab]();
   if(currentTab==='home') bindHome();
