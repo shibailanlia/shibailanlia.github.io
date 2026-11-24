@@ -468,11 +468,25 @@
   .info-detail .id-row .ic svg{width:26px;height:26px;}
   .info-detail .id-row .lab{font-size:17px;color:#333;flex:1;}
   .info-detail .id-row .val{font-size:16px;color:#999;}
-  .d-detail{background:#fff;padding:0 18px;}
-  .d-detail .dd-block{padding:18px 4px;}
-  .d-detail .dd-lab{font-size:17px;color:#333;font-weight:500;margin-bottom:10px;}
-  .d-detail .dd-val{font-size:15px;color:#999;line-height:1.6;}
-  .d-detail .dd-empty{background:#f7f7f7;height:120px;margin-top:8px;}
+  /* 请假详情（1:1 真实站 xsglxt） */
+  .d-detail{background:#fff;padding:0 .9375rem;}
+  .d-detail .dd-block{padding:1.125rem .25rem;}
+  .d-detail .dd-lab{font-size:1.0625rem;color:#333;font-weight:500;margin-bottom:.625rem;}
+  .d-detail .dd-val{font-size:.9375rem;color:#999;line-height:1.6;letter-spacing:.4px;}
+  .d-detail .dd-val.pass{color:#22a06b;}
+  .d-detail .dd-empty{background:#f7f7f7;height:8.125rem;margin-top:.5rem;}
+  /* 审批记录（真实站蓝勾时间轴） */
+  .audit-box{background:#fff;margin-top:.625rem;padding:.9375rem .9375rem 1.25rem;}
+  .sub-body.detail-body{background:#fff;}
+  .detail-body .d-detail{background:#fff;}
+  .detail-body .audit-box{background:#f5f6f8;margin:0;padding:.9375rem;}
+  .detail-body .audit-card{background:#fff;}
+  .audit-row{display:flex;gap:.625rem;}
+  .audit-dot{width:1.125rem;height:1.125rem;flex:0 0 1.125rem;border-radius:50%;background:#1e7bf5;
+    display:flex;align-items:center;justify-content:center;margin-top:.75rem;}
+  .audit-dot svg{width:.75rem;height:.75rem;color:#fff;}
+  .audit-card{flex:1;background:#f4f5f7;border-radius:.5rem;padding:.875rem 1rem;font-size:.875rem;color:#8a8a8a;line-height:1.9;}
+  .detail-body{background:#fff;}
 
   /* 课程表（真实浅蓝背景） */
   .schedule-page{background:linear-gradient(180deg,#7fc7e8 0%,#69b9dd 45%,#5aa9d6 100%);min-height:100%;position:relative;overflow:hidden;}
@@ -626,6 +640,7 @@ const I = {
   horn:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
   // 真实页面专用图标
   chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>',
   cal2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/><path d="M8 12h2M13 12h2M16 12h2M8 16h2M13 16h2"/></svg>',
   gender:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="14.5" r="4"/><path d="M8.5 18.5V22M6.5 20.5h4"/><circle cx="15.5" cy="8.5" r="3.5"/><path d="M18 6l3-3M18 3h3v3"/></svg>',
   cake:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7a4 4 0 0 0-8 0 4 4 0 0 0-8 0z"/><path d="M4 16h16M12 10V6M12 3.5a1.2 1.2 0 0 0 0 2.4M5 9h2M18 9h1M10 6.5h1"/></svg>',
@@ -1283,36 +1298,39 @@ function openLeaveList(){
 function openLeaveDetail(id){
   const u=user();
   const leaves=store.get('leaves',defaultLeaves());
-  const l=leaves.find(x=>x.id===id)||leaves[0];
-  const fields=[
-    ['流程单号',l.no,true],
-    ['学生姓名',displayName()],
-    ['手机号码',l.phone||u.phone||'',true],
-    ['请假类型',l.type],
-    ['请假时间',l.time],
-    ['请假原因',l.reason||'有事'],
-    ['待审核人员',l.auditor],
-    ['申请状态',statusBadge(l.status)],
-  ];
+  const l=leaves.find(x=>x.id===id)||leaves[0]||{};
+  const passed=/通过/.test(l.status||'');
+  const stText = passed ? '通过' : (l.status||'流程中');
+  const stCls  = passed ? ' pass' : '';
   const body=`
     <div class="d-detail">
-      ${fields.map(([lab,val,track])=>`
-        <div class="dd-block">
-          <div class="dd-lab">${lab}</div>
-          <div class="dd-val" ${track?'style="letter-spacing:1px;"':''}>${val}</div>
-        </div>`).join('')}
-      <div class="dd-block">
-        <div class="dd-lab">附件图片</div>
-        <div class="dd-empty"></div>
+      <div class="dd-block"><div class="dd-lab">流程单号</div><div class="dd-val">${l.no||'—'}</div></div>
+      <div class="dd-block"><div class="dd-lab">学生姓名</div><div class="dd-val">${displayName()}</div></div>
+      <div class="dd-block"><div class="dd-lab">手机号码</div><div class="dd-val">${l.phone||u&&u.phone||''}</div></div>
+      <div class="dd-block"><div class="dd-lab">请假类型</div><div class="dd-val">${l.type||'—'}</div></div>
+      <div class="dd-block"><div class="dd-lab">请假时间</div><div class="dd-val">${l.time||'—'}</div></div>
+      <div class="dd-block"><div class="dd-lab">请假原因</div><div class="dd-val">${l.reason||'有事'}</div></div>
+      <div class="dd-block"><div class="dd-lab">待审核人员</div><div class="dd-val">${passed?'—':(l.auditor||'—')}</div></div>
+      <div class="dd-block"><div class="dd-lab">申请状态</div><div class="dd-val${stCls}">${stText}</div></div>
+      <div class="dd-block"><div class="dd-lab">附件图片</div><div class="dd-empty"></div></div>
+    </div>
+    ${passed?`
+    <div class="audit-box">
+      <div class="audit-row">
+        <div class="audit-dot">${I.check||'✓'}</div>
+        <div class="audit-card">
+          审批时间：${l.auditTime||l.time||''}<br>
+          审核人员：${l.auditUser||'辅导员'}<br>
+          审批意见：${l.auditMemo||'通过'}
+        </div>
       </div>
-    </div>
-    <div class="btn-row">
-      <button class="blue-btn red" id="urBtn">催办</button>
-    </div>
+    </div>`:''}
+    ${passed?'':`<div class="btn-row"><button class="blue-btn red" id="urBtn">催办</button></div>`}
   `;
   openSub(lightShell('请假详情',body));
+  const sb=$('.sub-body'); if(sb) sb.classList.add('detail-body');
   bindBack(()=>openLeaveList());
-  $('#urBtn').onclick=()=>toast('已提醒审批人处理');
+  const b=$('#urBtn'); if(b) b.onclick=()=>toast('已提醒审批人处理');
 }
 
 /* ===================== 请假表单 ===================== */
