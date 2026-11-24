@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>智慧校园移动端</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- iOS 添加到主屏幕 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="智慧校园">
+<meta name="theme-color" content="#861932">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" href="assets/apple-touch-icon.png">
+<style>
+  :root{
+    --primary:#aa0000;
+    --primary-dark:#840911;
+    --pink-text:#ab425c;
+    --blue:#2f6fe0;
+    --gold1:#fffbf5;
+    --gold2:#ffc999;
+    --tabbar-h:54px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",Helvetica,sans-serif;
+    background:#e9e9ee;
+    display:flex;justify-content:center;
+    color:#222;
+  }
+  /* 手机外壳 */
+  #phone{
+    position:relative;
+    width:100%;max-width:430px;
+    height:100vh;
+    height:100dvh;
+    height:calc(var(--vh,1vh) * 100);
+    background:#fff;
+    overflow:hidden;
+    box-shadow:0 0 24px rgba(0,0,0,.18);
+  }
+  /* 页面滚动容器 */
+  #viewport{
+    position:absolute;top:0;left:0;right:0;bottom:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    background:#fafafa url("assets/mobileHeader.png") no-repeat top center;
+    background-size:cover;
+  }
+  #viewport.no-tabbar{bottom:0;}
+  #page{padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom));min-height:100%;}
+  #page.pad0{padding-bottom:0;}
+
+  /* ========== 通用顶部 ========== */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 18px 8px;
+  }
+  .topbar .title{
+    font-size:26px;font-weight:700;font-style:italic;
+    background:linear-gradient(180deg,var(--gold1),var(--gold2));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:2px;
+  }
+  .topbar .sub{
+    font-size:15px;
+    background:linear-gradient(180deg,var(--gold1),var(--gold2));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:1px;
+  }
+  .topbar .logo{width:58px;height:58px;}
+  .topbar .setting{font-size:24px;color:#2f6fe0;display:flex;align-items:center;}
+  .topbar .setting svg{width:26px;height:26px;}
+
+  /* ========== 首页（照抄真实站 index-C4rmnjJD.css，1rem=16px） ========== */
+  .home{
+    background-image:url("assets/mobileHeader.png");
+    background-size:cover;background-position:top center;background-repeat:no-repeat;
+    padding:15px;padding-top:calc(15px + env(safe-area-inset-top));
+    min-height:calc(100vh - var(--tabbar-h));
+    min-height:calc(100dvh - var(--tabbar-h) - env(safe-area-inset-bottom));
+    box-sizing:border-box;
+  }
+  .home .header{display:flex;}
+  .header-left-name{
+    flex:1;min-width:0;
+    background-image:linear-gradient(180deg,#fffbf5,#ffc999);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:4px;
+  }
+  .header-left-name h5{font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px;line-height:1.2;}
+  .header-left-name p{padding-top:5px;font-size:16px;line-height:1.2;}
+  .header-right{flex:0 0 33.33%;text-align:right;}
+  .header-right img{width:60px;height:60px;margin-right:10px;}
+
+  .header-carousel{margin-top:15px;}
+  .header-carousel-view{
+    white-space:nowrap;width:100%;
+    overflow-x:auto;scroll-snap-type:x mandatory;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  }
+  .header-carousel-view::-webkit-scrollbar{display:none;}
+  .header-carousel-item{border-radius:15px;display:inline-block;height:150px;width:100%;scroll-snap-align:start;vertical-align:top;}
+  .header-carousel-img{border-radius:15px;height:150px;width:100%;object-fit:cover;display:block;}
+
+  .top-nav{margin-top:10px;}
+  .top-nav .roll-news{
+    display:flex;align-items:center;
+    width:100%;max-width:100%;height:40px;
+    border-radius:20px;background:rgba(255,255,255,.8);
+    padding:0 12px;overflow:hidden;
+  }
+  .top-nav .roll-news .horn{width:23px;height:23px;flex:0 0 23px;color:#840911;margin-right:8px;}
+  .top-nav .roll-news .roll{flex:1;height:40px;overflow:hidden;position:relative;min-width:0;}
+  .top-nav .roll-news .roll-inner{transition:transform .5s ease;width:100%;}
+  .top-nav .roll-news .roll-item{height:40px;line-height:40px;font-size:13px;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;display:block;}
+
+  .backlog{margin-top:25px;display:flex;justify-content:space-around;}
+  .backlog .b-item{display:flex;flex-direction:column;align-items:center;}
+  .backlog-img{height:30px;width:30px;margin-left:9.5px;object-fit:contain;display:block;}
+  .backlog-text{margin-top:5px;font-weight:500;color:#ab425c;font-size:12px;line-height:1.2;}
+
+  .scroll-zehngti{position:relative;}
+  .often-nav{
+    margin-top:17.5px;background-color:#fff;border-radius:25px;
+    display:flex;align-items:center;padding-left:20px;
+    background:rgba(255,255,255,.9);
+  }
+  .often-scroll-view{display:flex;margin:15px 0;white-space:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .often-scroll-view::-webkit-scrollbar{display:none;}
+  .often-scroll-view-const{display:inline-block;}
+  .often-scroll-view-itme{
+    margin-left:20px;width:56px;min-height:95px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .often-scroll-view-img{width:25px;height:25px;margin-bottom:10px;object-fit:contain;display:block;}
+  .often-scroll-view-itme-p{white-space:nowrap;width:auto;min-width:56px;height:20px;font-size:12px;text-align:center;line-height:20px;color:#333;margin:0;}
+  .scrllbar{height:10px;width:70px;position:absolute;top:87%;left:40%;border-radius:10px;background:rgba(164,18,28,.1);}
+  .scrllbar-background{border-radius:10px;height:10px;width:70px;background:rgba(164,18,28,.9);transition:transform .1s ease-in-out;}
+
+  .often-nav-zhan{
+    margin-top:17.5px;background-color:#fff;border-radius:25px;
+    display:flex;align-items:center;background:rgba(255,255,255,.9);
+  }
+  .query-left{height:165px;width:33.33%;margin:15px;border-radius:15px;background-color:#fff2e7;position:relative;overflow:hidden;}
+  .query-left-h5{color:#e36729;position:absolute;top:10px;left:22.5px;font-weight:700;font-size:16px;}
+  .query-left-text{color:#e36729;position:absolute;top:35px;left:25px;font-size:12px;border:1px solid #efa66b;border-radius:15px;padding:.5px 5px 2.5px;}
+  .query-left img{width:100px;height:80px;position:absolute;bottom:0;right:0;}
+  .query-right{width:53%;}
+  .query-right-top{height:75px;margin-bottom:12.5px;background-color:rgba(185,234,234,.8);border-radius:15px;position:relative;overflow:hidden;transition:transform .5s;}
+  .query-right-top.enlarged{transform:scale(1.05);}
+  .query-right-top-h5{position:absolute;top:25px;left:25px;color:#5bb5c2;font-weight:700;font-size:15px;}
+  .query-right-top img{position:absolute;width:60px;height:50px;bottom:0;right:0;}
+  .query-right-bottom{height:75px;width:50%;border-radius:15px;background-color:#edfff4;position:relative;overflow:hidden;transition:transform .5s;}
+  .query-right-bottom-h5{position:absolute;color:#09887c;left:12.5px;top:12.5px;font-weight:700;font-size:13px;}
+  .query-right-bottom img{position:absolute;width:60px;height:40px;bottom:0;right:0;}
+
+  /* ========== 应用页 ========== */
+  .app-section{margin:14px;background:rgba(255,255,255,.92);border-radius:12px;padding:14px 6px 18px;}
+  .app-section .sec-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:4px 10px 12px;border-bottom:1px solid rgba(164,18,28,.18);margin-bottom:10px;
+  }
+  .app-section .sec-head .ht{display:flex;align-items:center;font-size:18px;font-weight:700;}
+  .app-section .sec-head .ht svg{width:22px;height:22px;margin-right:8px;color:var(--primary);}
+  .app-section .sec-head .help{font-size:14px;color:#1c6fd8;}
+  .app-grid{display:flex;flex-wrap:wrap;}
+  .app-grid .a-item{width:25%;display:flex;flex-direction:column;align-items:center;padding:12px 0;}
+  .app-grid .a-item svg{width:34px;height:34px;}
+  .app-grid .a-item img.ic{width:34px;height:34px;object-fit:contain;}
+  .app-grid .a-item span{font-size:13px;margin-top:8px;color:#333;}
+
+  /* ========== 资讯页 ========== */
+  .news-wrap{padding:0 14px;}
+  .news-card{margin-top:14px;background:rgba(255,255,255,.92);border-radius:14px;padding:16px;}
+  .news-card .nc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .news-card .nc-head .t{font-size:14px;color:#555;}
+  .news-card .nc-head .more{font-size:13px;color:#1c6fd8;}
+  .news-item{display:flex;align-items:center;padding:10px 0;}
+  .news-item .ni-icon{width:40px;height:40px;flex:0 0 40px;color:var(--blue);margin-right:12px;}
+  .news-item .ni-body .ni-title{font-size:15px;font-weight:600;margin-bottom:6px;}
+  .news-item .ni-body .ni-desc{font-size:13px;color:#888;}
+
+  /* ========== 我的 ========== */
+  .mine-wrap{padding:0 14px;}
+  .mine-profile{
+    margin-top:40px;background:rgba(255,255,255,.95);border-radius:12px;
+    padding:52px 20px 20px;position:relative;min-height:120px;
+  }
+  .mine-avatar{
+    position:absolute;top:-36px;left:28px;width:86px;height:86px;border-radius:50%;
+    border:3px solid #fff;overflow:hidden;background:#eef1f5;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .mine-avatar img{width:100%;height:100%;object-fit:cover;}
+  .mine-avatar svg{width:100%;height:100%;}
+  .mine-info{padding-left:2px;}
+  .mine-info .m-name{font-size:19px;font-weight:600;color:#222;}
+  .mine-info .m-phone{font-size:13px;color:#999;margin-top:6px;}
+  .mine-profile .edit-btn{
+    position:absolute;right:18px;top:24px;
+    border:1px solid var(--primary);color:var(--primary);
+    font-size:14px;border-radius:8px;padding:6px 14px;background:transparent;
+  }
+  .mine-help{margin-top:20px;background:rgba(255,255,255,.92);border-radius:10px;padding:16px 6px;}
+  .mine-help .mh-head{display:flex;align-items:center;font-size:17px;font-weight:700;padding:0 10px 14px;border-bottom:1px solid rgba(164,18,28,.18);}
+  .mine-help .mh-head svg{width:22px;height:22px;margin-right:8px;color:var(--primary);}
+  .mine-help-grid{display:flex;}
+  .mine-help-grid .h-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:14px 0;}
+  .mine-help-grid .h-item svg{width:30px;height:30px;}
+  .mine-help-grid .h-item img.ic{width:30px;height:30px;object-fit:contain;}
+  .mine-help-grid .h-item span{font-size:12px;margin-top:8px;text-align:center;}
+  .login-btn{
+    margin:26px 14px 0;display:block;width:calc(100% - 28px);
+    height:48px;border:none;border-radius:26px;
+    background:var(--primary);color:#fff;font-size:17px;font-weight:600;
+  }
+
+  /* ========== 底部 tabbar（凸起） ========== */
+  #tabbar{
+    position:absolute;left:0;right:0;bottom:0;height:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+    padding-bottom:env(safe-area-inset-bottom);
+    background:#fff;display:flex;z-index:50;
+  }
+  #tabbar .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;position:relative;color:#999;
+  }
+  #tabbar .tab svg{width:24px;height:24px;}
+  #tabbar .tab span{font-size:11px;}
+  #tabbar .tab.active{color:var(--primary);}
+  #tabbar .tab.active .tab-circle{
+    position:absolute;top:-20px;width:46px;height:46px;border-radius:50%;
+    background:var(--primary);border:4px solid #fff;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+  }
+  #tabbar .tab.active .tab-circle svg{width:22px;height:22px;color:#fff;}
+  #tabbar .tab.active .tab-icon{opacity:0;}
+  #tabbar .tab .tab-circle{display:none;}
+
+  /* ========== 全屏子页面 ========== */
+  .sub-page{
+    position:absolute;top:0;left:0;right:0;bottom:0;z-index:100;
+    background:#f5f5f7;display:flex;flex-direction:column;
+    animation:slideIn .25s ease;
+  }
+  @keyframes slideIn{from{transform:translateX(100%);}to{transform:translateX(0);}}
+  .sub-nav{
+    height:50px;flex:0 0 50px;display:flex;align-items:center;position:relative;
+    background:var(--primary);color:#fff;
+    padding-top:env(safe-area-inset-top);
+  }
+  .sub-nav .back{width:46px;height:50px;display:flex;align-items:center;justify-content:center;}
+  .sub-nav .back svg{width:24px;height:24px;}
+  .sub-nav .nav-title{position:absolute;left:50%;transform:translateX(-50%);font-size:17px;font-weight:600;}
+  .sub-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
+  /* 表单 */
+  .form-card{background:#fff;margin:10px;border-radius:10px;overflow:hidden;}
+  .form-row{display:flex;align-items:center;padding:14px 14px;border-bottom:1px solid #f0f0f0;min-height:52px;}
+  .form-row:last-child{border-bottom:none;}
+  .form-row .label{width:92px;flex:0 0 92px;font-size:15px;color:#333;}
+  .form-row .label .req{color:var(--primary);margin-right:3px;}
+  .form-row input,.form-row textarea,.form-row select{
+    flex:1;border:none;outline:none;font-size:15px;background:transparent;color:#333;width:100%;
+    font-family:inherit;
+  }
+  .form-row textarea{resize:none;min-height:74px;line-height:1.5;}
+  .form-row .arrow{color:#ccc;}
+  .form-row .val{flex:1;font-size:15px;color:#333;}
+  .form-row .ph{color:#bbb;}
+  .submit-btn{
+    margin:22px 14px 30px;width:calc(100% - 28px);height:46px;border:none;border-radius:24px;
+    background:var(--primary);color:#fff;font-size:16px;font-weight:600;
+  }
+
+  /* 列表 */
+  .list-tabs{display:flex;background:#fff;border-bottom:1px solid #eee;}
+  .list-tabs .lt{flex:1;text-align:center;padding:14px 0;font-size:15px;color:#333;position:relative;}
+  .list-tabs .lt.on{color:#000;font-weight:600;}
+  .list-tabs .lt.on::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:2px;background:#a4121c;}
+  .task-card{background:#fff;margin:10px;border-radius:10px;padding:14px;}
+  .task-card .tc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .task-card .tc-top .tt{font-size:16px;font-weight:600;}
+  .tag{font-size:11px;padding:2px 8px;border-radius:4px;}
+  .tag.red{background:#fdeaea;color:#e53935;}
+  .tag.orange{background:#fff3e0;color:#fb8c00;}
+  .tag.blue{background:#e8f0fe;color:#2f6fe0;}
+  .tag.green{background:#e6f7ec;color:#1a9e54;}
+  .tag.gray{background:#f0f0f0;color:#888;}
+  .task-card .tc-line{font-size:13px;color:#777;margin-top:6px;}
+  .task-card .tc-line b{color:#444;font-weight:500;}
+
+  .empty{display:flex;flex-direction:column;align-items:center;padding:70px 0;color:#bbb;}
+  .empty svg{width:70px;height:70px;margin-bottom:14px;}
+  .empty p{font-size:14px;}
+
+  /* 课程表 */
+  .schedule{background:#fff;margin:10px;border-radius:10px;overflow:hidden;}
+  .schedule .sch-head{display:flex;background:var(--primary);color:#fff;font-size:12px;}
+  .schedule .sch-head div{flex:1;text-align:center;padding:10px 2px;}
+  .schedule .sch-head .time-col{flex:0 0 38px;}
+  .schedule .sch-row{display:flex;border-bottom:1px solid #f0f0f0;min-height:58px;}
+  .schedule .sch-row .time-col{flex:0 0 38px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#999;background:#fafafa;}
+  .schedule .sch-row .cell{flex:1;border-left:1px solid #f0f0f0;padding:3px;}
+  .course{font-size:10px;border-radius:4px;padding:4px 3px;color:#fff;line-height:1.3;margin-bottom:2px;word-break:break-all;}
+
+  /* 成绩 */
+  .grade-card{background:#fff;margin:10px;border-radius:10px;padding:14px;}
+  .grade-card .gc-name{font-size:15px;font-weight:600;margin-bottom:10px;}
+  .grade-card .gc-grid{display:flex;flex-wrap:wrap;}
+  .grade-card .gc-grid .g{width:33.33%;text-align:center;margin-bottom:10px;}
+  .grade-card .gc-grid .g .num{font-size:18px;font-weight:700;color:var(--primary);}
+  .grade-card .gc-grid .g .lab{font-size:12px;color:#999;margin-top:3px;}
+
+  /* 统一身份认证 移动端登录页（仿真实） */
+  .sso-page{background:#fff;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+  .sso-bg{position:absolute;left:0;right:0;bottom:0;height:62%;background-image:url("assets/banner2.png");background-size:cover;background-position:center;opacity:.16;pointer-events:none;filter:grayscale(.2);}
+  .sso-content{position:relative;z-index:1;padding:34px 34px 0;display:flex;flex-direction:column;align-items:center;flex:1;}
+  .sso-logo{width:118px;height:118px;}
+  .sso-tab{margin-top:26px;font-size:22px;font-weight:700;color:#881631;letter-spacing:2px;position:relative;padding-bottom:10px;}
+  .sso-tab::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:44px;height:4px;border-radius:2px;background:#881631;}
+  .sso-form{width:100%;margin-top:26px;}
+  .sso-field{display:flex;align-items:center;border-bottom:1px solid #e2e2e2;margin-bottom:8px;}
+  .sso-field .s-ico{width:26px;height:26px;color:#b5b5b5;margin-right:12px;flex:0 0 26px;}
+  .sso-field input{flex:1;border:none;outline:none;height:52px;font-size:16px;background:transparent;color:#333;}
+  .sso-field input::placeholder{color:#b5b5b5;}
+  .sso-field:focus-within{border-bottom:1.5px solid #2196f3;}
+  .sso-remember{display:flex;align-items:center;width:100%;margin-top:14px;font-size:15px;color:#333;}
+  .sso-remember .cb{width:20px;height:20px;background:#fff;border:1.5px solid #999;border-radius:5px;margin-right:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;}
+  .sso-remember.on .cb{background:#881631;border-color:#881631;}
+  .sso-remember .q{width:18px;height:18px;border-radius:50%;background:#bbb;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:8px;}
+  .sso-login{width:100%;height:52px;border:none;border-radius:8px;background:#861932;color:#fff;font-size:18px;font-weight:600;margin-top:26px;}
+  .sso-wx{display:flex;flex-direction:column;align-items:center;margin-top:30px;position:relative;z-index:1;padding-bottom:20px;}
+  .sso-wx .wxb{width:64px;height:64px;border-radius:50%;background:#07c160;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(7,193,96,.4);}
+  .sso-wx .wxb svg{width:40px;height:40px;color:#fff;}
+  .sso-wx span{font-size:14px;color:#666;margin-top:8px;}
+
+  /* 请假详情（仿真实） */
+  .ld-top{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:20px 16px;border-bottom:1px solid #f0f0f0;}
+  .ld-top .who{color:#999;font-size:17px;}
+  .ld-top .who b{color:#888;font-weight:500;}
+  .ld-top .switch{color:#999;font-size:14px;display:flex;align-items:center;}
+  .ld-card{background:#fff;}
+  .ld-row{display:flex;justify-content:space-between;align-items:center;padding:19px 16px;border-bottom:1px solid #f0f0f0;gap:12px;}
+  .ld-row .lab{color:#878787;font-size:16px;flex:0 0 auto;}
+  .ld-row .val{color:#7e7e7e;font-size:16px;text-align:right;word-break:break-all;}
+  .ld-row .val.track{letter-spacing:1.5px;}
+  .ld-top .who b{color:#7e7e7e;font-weight:500;}
+  /* 我的请假列表（1:1 真实站 xsglxt 列表样式） */
+  .lv-item{background:#fff;margin:0 0 10px;border-radius:0;overflow:hidden;box-shadow:none;}
+  .lv-item-top{display:flex;justify-content:space-between;align-items:center;padding:20px 16px 6px;}
+  .lv-item-top .lv-who{color:#333;font-size:17px;font-weight:400;}
+  .lv-item-top .lv-more{color:#999;font-size:15px;display:flex;align-items:center;}
+  .lv-item-top .lv-more svg{width:14px;height:14px;margin-left:2px;}
+  .lv-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:none;gap:12px;}
+  .lv-item .lv-row:last-child{padding-bottom:18px;}
+  .lv-row .lab{color:#5a5a5a;font-size:16.5px;flex:0 0 auto;}
+  .lv-row .val{color:#8a8a8a;font-size:16.5px;text-align:right;word-break:break-all;}
+  .lv-row .val.track{letter-spacing:2px;}
+  .lv-row.lv-time{flex-direction:column;align-items:flex-start;gap:8px;}
+  .lv-row.lv-time .val{text-align:left;letter-spacing:1.5px;}
+  .fab{position:absolute;right:20px;bottom:28px;width:58px;height:58px;border-radius:50%;background:#5677fe;color:#fff;border:none;box-shadow:0 5px 16px rgba(86,119,254,.5);display:flex;align-items:center;justify-content:center;z-index:5;}
+  .fab svg{width:28px;height:28px;}
+
+  /* 详情/文章 */
+  .article{background:#fff;margin:10px;border-radius:10px;padding:18px;}
+  .article h2{font-size:19px;margin-bottom:10px;}
+  .article .meta{font-size:12px;color:#999;margin-bottom:14px;}
+  .article p{font-size:15px;line-height:1.8;color:#444;margin-bottom:12px;}
+
+  /* ============ 真实表单通用 ============ */
+  /* 蓝色渐变胶囊提交按钮 */
+  .blue-btn{
+    margin:22px 16px 30px;width:calc(100% - 32px);height:52px;border:none;border-radius:26px;
+    background:linear-gradient(90deg,#5a86ff,#5b73f5);color:#fff;font-size:18px;font-weight:600;
+    box-shadow:0 6px 16px rgba(91,115,245,.32);
+  }
+  .blue-btn.red{background:#e8504a;box-shadow:0 6px 16px rgba(232,80,74,.3);}
+  .blue-btn.outline{background:#fff;color:#5a86ff;border:1px solid #5a86ff;box-shadow:none;}
+  .btn-row{display:flex;gap:12px;margin:22px 16px 30px;}
+  .btn-row .blue-btn{margin:0;flex:1;}
+  /* 蓝色标题竖条（修改密码） */
+  .bar-title{display:flex;align-items:center;font-size:18px;font-weight:700;color:#333;padding:22px 18px 8px;}
+  .bar-title::before{content:"";width:4px;height:20px;border-radius:2px;background:#5a86ff;margin-right:10px;}
+
+  /* 胶囊字段（班级确认 / 报修） */
+  .pill-fields{padding:18px 14px;}
+  .pill-field{
+    display:flex;align-items:center;min-height:58px;background:#fff;
+    border:1px solid #e9e9e9;border-radius:30px;padding:10px 22px;margin-bottom:14px;position:relative;
+  }
+  .pill-field.readonly{background:#f9f9f9;border-color:#f0f0f0;}
+  .pill-field .lab{font-size:16px;color:#333;flex:0 0 112px;white-space:nowrap;}
+  .pill-field .lab.wide{flex-basis:132px;}
+  .pill-field .lab .req{color:#e8504a;margin-right:2px;}
+  .pill-field .val{flex:1;font-size:16px;color:#333;text-align:left;word-break:break-all;}
+  .pill-field .ph{color:#bbb;}
+  .pill-field input,.pill-field select{
+    flex:1;border:none;outline:none;background:transparent;font-size:16px;color:#333;text-align:left;font-family:inherit;
+  }
+  .pill-field .chev{color:#333;flex:0 0 auto;margin-left:8px;display:flex;align-items:center;}
+  .pill-field .chev svg{width:16px;height:16px;}
+  .pill-field textarea{flex:1;border:none;outline:none;background:transparent;font-size:15px;color:#333;font-family:inherit;resize:none;min-height:120px;}
+  .pill-field textarea::placeholder,.pill-field input::placeholder{color:#bbb;}
+
+  /* 请假表单：独立圆角卡片字段 */
+  .lv-form{padding:22px 16px 0;}
+  .lv-card{
+    background:#fff;border:1px solid #e9e9e9;border-radius:18px;
+    padding:0 20px;margin-bottom:24px;
+  }
+  .lv-card .lv-row{display:flex;align-items:center;min-height:64px;position:relative;}
+  .lv-card .lv-row .lab{font-size:17px;color:#333;flex:0 0 auto;white-space:nowrap;}
+  .lv-card .lv-row .lab .req{color:#e8504a;margin-right:2px;}
+  .lv-card .lv-row .val{flex:1;font-size:17px;color:#333;text-align:left;margin-left:10px;}
+  .lv-card .lv-row .ph{color:#bbb;}
+  .lv-card input,.lv-card select{
+    flex:1;min-width:0;border:none;outline:none;background:transparent;font-size:17px;color:#333;text-align:left;font-family:inherit;
+  }
+  .lv-card select,.pill-field select{-webkit-appearance:none;appearance:none;}
+  .lv-card .ic{flex:0 0 auto;color:#333;margin-left:10px;}
+  .lv-card .ic svg{width:26px;height:26px;}
+  .lv-card .vcode-btn{
+    flex:0 0 auto;background:#5a7cf6;color:#fff;border:none;border-radius:8px;
+    font-size:14px;padding:10px 13px;margin-left:10px;white-space:nowrap;
+  }
+  .lv-card textarea{flex:1;border:none;outline:none;background:transparent;font-size:17px;color:#333;font-family:inherit;resize:none;min-height:150px;text-align:left;}
+  .lv-card textarea::placeholder{color:#bbb;}
+  .lv-card.block{padding:20px;}
+  .lv-card.block .lv-row{align-items:flex-start;}
+  .lv-card.block .lv-row .lab{padding-top:2px;}
+  .lv-upload-head{display:flex;justify-content:space-between;align-items:center;font-size:17px;color:#333;margin-bottom:14px;}
+  .lv-upload-head .cnt{font-size:16px;color:#999;}
+  .lv-upload-box{width:96px;height:96px;border:1px solid #e5e5e5;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#e0e0e0;}
+  .lv-upload-box svg{width:44px;height:44px;}
+
+  /* 维修工电话提示条 */
+  .tip-bar{background:#eaf5fb;padding:14px 18px;border-bottom:1px solid #d8eefb;}
+  .tip-bar .t{font-size:15px;color:#333;}
+  .tip-bar .n{font-size:18px;color:#1a6fe8;font-weight:700;margin-top:2px;}
+
+  /* 只读详情（我的信息/请假详情） */
+  .info-detail{background:#fff;}
+  .info-detail .id-row{display:flex;align-items:center;padding:20px 22px;border-bottom:1px solid #f0f0f0;}
+  .info-detail .id-row .ic{width:26px;height:26px;color:#333;margin-right:16px;flex:0 0 26px;}
+  .info-detail .id-row .ic svg{width:26px;height:26px;}
+  .info-detail .id-row .lab{font-size:17px;color:#333;flex:1;}
+  .info-detail .id-row .val{font-size:16px;color:#999;}
+  .d-detail{background:#fff;padding:0 18px;}
+  .d-detail .dd-block{padding:18px 4px;}
+  .d-detail .dd-lab{font-size:17px;color:#333;font-weight:500;margin-bottom:10px;}
+  .d-detail .dd-val{font-size:15px;color:#999;line-height:1.6;}
+  .d-detail .dd-empty{background:#f7f7f7;height:120px;margin-top:8px;}
+
+  /* 课程表（真实浅蓝背景） */
+  .schedule-page{background:linear-gradient(180deg,#7fc7e8 0%,#69b9dd 45%,#5aa9d6 100%);min-height:100%;position:relative;overflow:hidden;}
+  .schedule-deco{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  .schedule-head,.schedule-body{position:relative;z-index:1;}
+  .schedule-head{display:flex;position:sticky;top:0;z-index:2;background:rgba(255,255,255,.12);}
+  .schedule-head div{flex:1;text-align:center;color:#333;font-size:14px;padding:12px 0;}
+  .schedule-head .j{flex:0 0 42px;}
+  .schedule-body{position:relative;}
+  .schedule-row{display:flex;align-items:stretch;border-bottom:1px dashed rgba(255,255,255,.55);min-height:108px;}
+  .schedule-row .j{flex:0 0 42px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#333;}
+  .schedule-row .j .n{font-size:17px;font-weight:600;}
+  .schedule-row .j .t{font-size:12px;margin-top:2px;}
+  .schedule-row .cell{flex:1;border-left:1px dashed rgba(255,255,255,.35);}
+
+  /* 成绩表（真实） */
+  .term-bar{padding:12px 14px;}
+  .term-sel{display:flex;align-items:center;background:#eaf3fe;border-radius:24px;padding:12px 20px;font-size:14px;color:#333;}
+  .term-sel .tt{color:#165dff;flex:1;text-align:center;}
+  .term-sel .down{color:#165dff;flex:0 0 auto;}
+  .score-table{margin:0;background:#fff;}
+  .score-table table{width:100%;border-collapse:collapse;table-layout:fixed;}
+  .score-table th{background:#f3f3f3;color:#165dff;font-size:15px;padding:14px 4px;text-align:center;font-weight:600;line-height:1.3;}
+  .score-table th:first-child{width:40%;}
+  .score-table td{padding:16px 4px;text-align:center;font-size:16px;border-bottom:1px solid #f2f2f2;color:#333;}
+  .score-table td:first-child{text-align:center;font-weight:500;}
+
+  /* 空状态（真实放大镜） */
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:120px;color:#999;}
+  .empty-state .em{width:150px;height:150px;opacity:.55;}
+  .empty-state p{font-size:16px;margin-top:8px;}
+
+  /* 报修列表状态 */
+  .rp-wrap{background:#fff;margin:12px;border-radius:12px;overflow:hidden;}
+  .rp-status{display:flex;justify-content:space-between;align-items:center;padding:18px 18px 14px;}
+  .rp-status .s{color:#165dff;font-size:17px;font-weight:600;}
+  .rp-status .d{color:#165dff;font-size:15px;}
+  .rp-wrap .ld-card .ld-row:first-child{border-top:1px solid #f0f0f0;}
+
+  /* 社团列表 */
+  .mass-card{background:#fff;margin:12px 12px 0;border-radius:12px;padding:16px;}
+  .mass-card .mc-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #f5f5f5;}
+  .mass-card .mc-top .n{color:#777;font-size:17px;}
+  .mass-card .mc-top .d{color:#165dff;font-size:14px;}
+  .mass-card .mc-row{display:flex;justify-content:space-between;padding:14px 0 2px;font-size:15px;color:#777;}
+
+  /* 待办/申请子页（红色背景） */
+  .task-sub{min-height:100%;background:url('assets/mobileHeader.png') no-repeat top center;background-size:cover;background-color:#fafafa;}
+  .task-sub .ts-head{padding:24px 24px 18px;}
+  .task-sub .ts-head .t{font-size:24px;font-style:italic;color:#fff;font-weight:700;}
+  .task-sub .ts-head .s{font-size:14px;color:#fff;margin-top:6px;}
+  .task-sub .ts-logo{position:absolute;right:22px;top:26px;width:54px;height:54px;}
+  .task-sub .ts-card{background:#fff;border-radius:18px 18px 0 0;min-height:60vh;}
+  .apply-card{background:transparent;margin:0;padding:18px 16px;}
+  .apply-card .ac-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .apply-card .ac-top .t{font-size:19px;font-weight:400;color:#000;}
+  .apply-card .ac-top .st{font-size:12px;color:#ffad49;background:rgba(255,190,106,.31);border:1px solid #ffbe6a;border-radius:6px;padding:3px 10px;}
+  .apply-card .ac-line{font-size:15px;color:#b8bfc8;margin-top:7px;}
+  .apply-card .ac-line b{color:#b8bfc8;font-weight:400;}
+  #applyList{display:flex;flex-direction:column;gap:12px;}
+  #applyList .apply-card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  .apply-card .ac-top .st-ing{color:#f0a030;background:rgba(240,160,48,.12);border:1px solid #f3c37a;}
+  .apply-card .ac-top .st-pass{color:#22a06b;background:rgba(34,160,107,.12);border:1px solid #7fd2b1;}
+  .apply-card .ac-top .st-reject{color:#e54545;background:rgba(229,69,69,.10);border:1px solid #f0a3a3;}
+
+
+  /* Toast */
+  #toast{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.78);color:#fff;font-size:14px;padding:12px 20px;border-radius:8px;
+    z-index:999;max-width:70%;text-align:center;display:none;
+  }
+  /* 页面切换加载 */
+  #loading{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.86);
+    display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:880;}
+  #loading.on{display:flex;}
+  #loading .spin{width:32px;height:32px;border:3px solid rgba(170,0,0,.15);border-top-color:var(--primary);
+    border-radius:50%;animation:ldspin .8s linear infinite;}
+  #loading .lt{font-size:13px;color:#999;letter-spacing:1px;}
+  @keyframes ldspin{to{transform:rotate(360deg);}}
+  /* 弹窗 */
+  .mask{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;}
+  .dialog{background:#fff;border-radius:12px;width:78%;max-width:320px;padding:22px 18px 0;text-align:center;}
+  .dialog .d-title{font-size:17px;font-weight:600;margin-bottom:10px;}
+  .dialog .d-msg{font-size:14px;color:#666;line-height:1.6;margin-bottom:20px;}
+  .dialog .d-btns{display:flex;border-top:1px solid #f0f0f0;margin:0 -18px;}
+  .dialog .d-btns button{flex:1;height:48px;border:none;background:transparent;font-size:16px;color:#666;}
+  .dialog .d-btns button:first-child{border-right:1px solid #f0f0f0;}
+  .dialog .d-btns button.primary{color:var(--primary);font-weight:600;}
+</style>
+</head>
+<body>
+<script>
+/* 移除 CodeSandbox 预览注入的 Open Sandbox 悬浮按钮(iframe) */
+(function(){
+  function kill(){
+    try{
+      document.querySelectorAll('iframe[id*="open-sandbox"],iframe[id^="sb__"],[id*="open-sandbox"]')
+        .forEach(function(el){ el.remove(); });
+    }catch(e){}
+  }
+  kill();
+  setTimeout(kill,300);setTimeout(kill,1000);setTimeout(kill,2500);setTimeout(kill,5000);
+  if(window.MutationObserver){
+    var tm=null;
+    new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(kill,80);})
+      .observe(document.documentElement,{childList:true,subtree:true});
+  }
+})();
+</script>
+<div id="phone">
+  <div id="viewport">
+    <div id="page"></div>
+  </div>
+  <div id="tabbar"></div>
+  <div id="sub"></div>
+  <div id="loading"><div class="spin"></div><div class="lt">加载中…</div></div>
+  <div id="toast"></div>
+</div>
+<script>
+/* ===================== SVG 图标库 ===================== */
+const I = {
+  // 底部
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/></svg>',
+  apps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3h9a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1.5"/><path d="M3 9h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6l-3 3v-9a2 2 0 0 1 0-4z"/></svg>',
+  mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  // 待办三入口
+  todo:'<img src="assets/daiban.png" class="ic">',
+  done:'<img src="assets/yiban.png" class="ic">',
+  apply:'<img src="assets/shenqing.png" class="ic">',
+  // 常用
+  flash:'<img src="assets/dianbiao.png" class="ic">',
+  card:'<img src="assets/yikatong.png" class="ic">',
+  // 日常生活
+  water:'<svg viewBox="0 0 48 48" fill="none" stroke="#a8262f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6C18 15 12 22 12 29a12 12 0 0 0 24 0c0-7-6-14-12-23z"/><path d="M19 29a5 5 0 0 0 5 5"/></svg>',
+  houseyen:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 24 9l16 13"/><path d="M13 20v18h22V20"/><path d="M20 30l4-5 4 5M24 25v9"/></svg>',
+  yen:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19"/><path d="M16 17l8 11 8-11M24 28v7M20 31h8M20 35h8"/></svg>',
+  // 学工
+  leave:'<img src="assets/qingjia.png" class="ic">',
+  confirm:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="27" height="35" rx="3"/><path d="M16 21l4 4 9-10"/><circle cx="34" cy="36" r="8.5" fill="#fff" stroke="#2f6fe0"/><circle cx="34" cy="33" r="2.6" fill="#2f6fe0" stroke="none"/><path d="M29.5 40.5c.4-3 2.2-4.2 4.5-4.2s4.1 1.2 4.5 4.2" fill="#2f6fe0" stroke="none"/></svg>',
+  club:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="6"/><path d="M7 36c0-5 5-8 11-8s11 3 11 8"/><circle cx="33" cy="20" r="5"/><path d="M34 28c5 1 8 3.5 8 8"/></svg>',
+  head:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="18" r="9"/><path d="M9 42c0-8 7-12 15-12s15 4 15 12"/><path d="M34 12l4-2M38 18h5"/></svg>',
+  cap:'<img src="assets/xueji.png" class="ic">',
+  repair:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M34 7a8 8 0 0 0-8 8c0 1 .2 2 .5 2.8L14 30l4 4 12.2-12.5c.8.3 1.8.5 2.8.5a8 8 0 0 0 8-8l-5 5-5-1-1-5z"/><path d="M8 36l6 6"/></svg>',
+  gearwrench:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M38.5 24c0-1.5-.2-3-.6-4.4l4-3.1-3.8-6.6-4.7 1.9c-2.2-1.9-4.8-3.2-7.7-3.7l-.7-5h-8l-.7 5c-2.9.5-5.5 1.8-7.7 3.7l-4.7-1.9-3.8 6.6 4 3.1c-.4 1.4-.6 2.9-.6 4.4s.2 3 .6 4.4l-4 3.1 3.8 6.6 4.7-1.9c2.2 1.9 4.8 3.2 7.7 3.7l.7 5h8l.7-5c2.9-.5 5.5-1.8 7.7-3.7l4.7 1.9 3.8-6.6-4-3.1c.4-1.4.6-2.9.6-4.4z"/><circle cx="24" cy="24" r="7.6" fill="#fff"/><path d="M21.5 21.5l11 11M29 27l3-3a3.2 3.2 0 0 0-4.5-4.5l-3 3-1.5-1.5a3.2 3.2 0 0 1 4.5-4.5l-3 3" stroke-width="1.7"/></svg>',
+  layers:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10 8 18l16 8 16-8z"/><path d="M10 24l14 7 14-7"/><path d="M10 30l14 7 14-7"/></svg>',
+  building:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="10" width="18" height="30"/><path d="M26 18h12v22H26"/><path d="M12 16h3M19 16h3M12 22h3M19 22h3M12 28h3M19 28h3M12 34h3M19 34h3M30 24h4M30 30h4M30 36h4"/></svg>',
+  grid:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2"><rect x="7" y="7" width="13" height="13" rx="2"/><rect x="28" y="7" width="13" height="13" rx="2"/><rect x="7" y="28" width="13" height="13" rx="2"/><rect x="28" y="28" width="13" height="13" rx="2"/></svg>',
+  score:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="32" height="36" rx="3"/><path d="M16 16h16M16 23h16M16 30h9"/><path d="M32 30l3 3 5-6"/></svg>',
+  horn:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  // 真实页面专用图标
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  cal2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/><path d="M8 12h2M13 12h2M16 12h2M8 16h2M13 16h2"/></svg>',
+  gender:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="14.5" r="4"/><path d="M8.5 18.5V22M6.5 20.5h4"/><circle cx="15.5" cy="8.5" r="3.5"/><path d="M18 6l3-3M18 3h3v3"/></svg>',
+  cake:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7a4 4 0 0 0-8 0 4 4 0 0 0-8 0z"/><path d="M4 16h16M12 10V6M12 3.5a1.2 1.2 0 0 0 0 2.4M5 9h2M18 9h1M10 6.5h1"/></svg>',
+  cert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3" width="13" height="15" rx="1.5"/><path d="M5.5 7h7M5.5 10h7M5.5 13h4"/><circle cx="16.5" cy="17" r="4.2"/><path d="M14.6 20.4l-1.1 3 2.2-1 1.9 1.2-.7-3.1"/></svg>',
+  usercard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.3-3.8 2.7-5.5 5.5-5.5s5.2 1.7 5.5 5.5"/><rect x="13.5" y="13" width="7.5" height="7" rx="1"/><path d="M15.3 15.5h4M15.3 18h2.5"/></svg>',
+  upload:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M24 12v24M12 24h24"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  setting:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.4 1a7.4 7.4 0 0 0-2.6-1.5L14 2h-4l-.4 2.6A7.4 7.4 0 0 0 7 6.1l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.4-1a7.4 7.4 0 0 0 2.6 1.5L10 22h4l.4-2.6a7.4 7.4 0 0 0 2.6-1.5l2.4 1 2-3.4z"/><circle cx="12" cy="12" r="3.2"/></svg>',
+  person:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#eef1f5"/><path d="M24 12.5a7.6 7.6 0 0 0-7.6 7.6c0 3.9 2.9 6.6 7.6 6.6s7.6-2.7 7.6-6.6A7.6 7.6 0 0 0 24 12.5z" fill="#b7bdc8"/><path d="M9.5 42.5c1.2-7.2 7.2-11.2 14.5-11.2s13.3 4 14.5 11.2z" fill="#cfdcf0"/></svg>',
+  infodoc:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="6" width="28" height="36" rx="3"/><circle cx="21" cy="19" r="3.6"/><path d="M14.5 31c.3-3.5 2.9-5.2 6.5-5.2s6.2 1.7 6.5 5.2"/><path d="M31 11h4M31 17h4M31 23h4" stroke-width="1.8"/></svg>',
+  doc:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="5" width="28" height="38" rx="3"/><path d="M17 15h14M17 22h14M17 29h9"/></svg>',
+  wrench:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M30 6a9 9 0 0 0-9 9c0 1.5.3 2.8.9 4L6 35l7 7 16-16c1.2.6 2.5.9 4 .9a9 9 0 0 0 9-9l-6 6-7-1-1-7z"/></svg>',
+  editdoc:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5h18l8 8v28a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M29 5v8h8"/><path d="m18 28 10-10 3 3-10 10-6 2z"/></svg>',
+  docs:'<svg viewBox="0 0 48 48" fill="none" stroke="#2f6fe0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="10" width="26" height="32" rx="3"/><path d="M20 10V7a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v30a2 2 0 0 0 2 2h3"/><path d="M20 20h14M20 27h14M20 34h9"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>',
+  setting:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>',
+  empty:'<svg viewBox="0 0 80 80" fill="none" stroke="#d8d8d8" stroke-width="2.5"><rect x="16" y="14" width="48" height="56" rx="4"/><path d="M28 30h24M28 42h24M28 54h14"/></svg>',
+  searchEmpty:'<svg viewBox="0 0 120 120" fill="none"><circle cx="40" cy="36" r="3" fill="#dcdcdc"/><circle cx="88" cy="30" r="4" fill="#e6e6e6"/><circle cx="32" cy="70" r="3" fill="#e6e6e6"/><circle cx="92" cy="78" r="3" fill="#e6e6e6"/><path d="M64 38a20 20 0 1 0 0 40 20 20 0 0 0 0-40z" fill="#fff" stroke="#b9b9b9" stroke-width="4"/><circle cx="72" cy="50" r="6" fill="#f3c9c0"/><path d="M79 64l16 16" stroke="#a8a8a8" stroke-width="7" stroke-linecap="round"/><path d="M38 92h44M46 100h28M54 107h12" stroke="#d9d9d9" stroke-width="3.5" stroke-linecap="round"/></svg>',
+  newsicon:'<svg viewBox="0 0 40 40" fill="none" stroke="#2f6fe0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16h7l11-6v20l-11-6H7z"/><path d="M11 16v8h5"/><path d="M28.5 14a5.5 5.5 0 0 1 0 12"/></svg>',
+};
+
+/* ===================== 工具函数 ===================== */
+const $ = (s,el=document)=>el.querySelector(s);
+const GLOBAL_KEYS={user:1,news:1};
+function curUser(){ try{const v=localStorage.getItem('user');return v?JSON.parse(v):null;}catch(e){return null;} }
+const store = {
+  // 每个账号的数据独立：非全局键自动加 u_<账号>_ 前缀
+  key(k){ if(GLOBAL_KEYS[k])return k; const u=curUser(); return u&&u.username?('u_'+u.username+'_'+k):k; },
+  get(k,d){ try{const v=localStorage.getItem(this.key(k));return v?JSON.parse(v):d;}catch(e){return d;} },
+  set(k,v){
+    try{
+      localStorage.setItem(this.key(k),JSON.stringify(v));
+      if(k==='user'&&v&&v.username){ localStorage.setItem('prof_'+v.username,JSON.stringify(v)); }
+    }catch(e){}
+  },
+  del(k){ localStorage.removeItem(this.key(k)); },
+  rawGet(k,d){ try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;} }
+};
+let toastTimer;
+function toast(msg,ms=1800){
+  const t=$('#toast'); t.textContent=msg; t.style.display='block';
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.display='none',ms);
+}
+function dialog(title,msg,{okText='确定',cancelText='取消'}={}){
+  return new Promise(res=>{
+    const mask=document.createElement('div');
+    mask.className='mask';
+    mask.innerHTML=`<div class="dialog"><div class="d-title">${title}</div><div class="d-msg">${msg}</div>
+      <div class="d-btns"><button id="dCancel">${cancelText}</button><button class="primary" id="dOk">${okText}</button></div></div>`;
+    $('#phone').appendChild(mask);
+    mask.querySelector('#dCancel').onclick=()=>{mask.remove();res(false);};
+    mask.querySelector('#dOk').onclick=()=>{mask.remove();res(true);};
+  });
+}
+function isLogin(){ return !!store.get('user',null); }
+function user(){ return store.get('user',null); }
+// 未登录时也能显示姓名的兜底
+function displayName(){
+  var x=user();
+  if(x&&x.name) return x.name;
+  try{ if(typeof REAL!=='undefined'&&REAL.name) return REAL.name; }catch(e){}
+  return '学生';
+}
+
+/* ===================== 路由 ===================== */
+const TABS=[
+  {key:'home',label:'首页',icon:I.home},
+  {key:'apps',label:'应用',icon:I.apps},
+  {key:'news',label:'资讯',icon:I.news},
+  {key:'mine',label:'我的',icon:I.mine},
+];
+let currentTab='home';
+
+function renderTabbar(){
+  const tb=$('#tabbar');
+  tb.innerHTML=TABS.map(t=>`
+    <div class="tab ${currentTab===t.key?'active':''}" data-tab="${t.key}">
+      <span class="tab-icon">${t.icon}</span>
+      <span class="tab-circle">${t.icon}</span>
+      <span>${t.label}</span>
+    </div>`).join('');
+  tb.querySelectorAll('.tab').forEach(el=>{
+    el.onclick=()=>{ switchTab(el.dataset.tab); };
+  });
+}
+function switchTab(key){
+  currentTab=key;
+  closeSub();
+  renderTabbar();
+  renderPage();
+  $('#viewport').scrollTop=0;
+}
+function renderPage(){
+  const page=$('#page');
+  page.classList.remove('pad0');
+  const map={home:rHome,apps:rApps,news:rNews,mine:rMine};
+  page.innerHTML=map[currentTab]();
+  if(currentTab==='home') bindHome();
+  if(currentTab==='apps') bindApps();
+  if(currentTab==='news') bindNews();
+  if(currentTab==='mine') bindMine();
+}
+
+/* ===================== 子页面（全屏覆盖） ===================== */
+function openSub(html){
+  $('#sub').innerHTML=html;
+  $('#viewport').style.bottom='0';
+}
+function closeSub(){
+  $('#sub').innerHTML='';
+  $('#viewport').style.bottom='';
+}
+function subShell(title,body,navRight=''){
+  return `<div class="sub-page">
+    <div class="sub-nav">
+      <div class="back" id="subBack">${I.back}</div>
+      <div class="nav-title">${title}</div>${navRight}
+    </div>
+    <div class="sub-body">${body}</div>
+  </div>`;
+}
+// 子系统浅色导航（白底黑字，仿真实 H5 嵌入页）
+function lightShell(title,body){
+  return `<div class="sub-page" style="background:#f5f5f7;">
+    <div class="sub-nav" style="background:transparent;box-shadow:none;color:#333;">
+      <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+      <div class="nav-title" style="color:#333;position:static;transform:none;margin-left:4px;">${title}</div>
+    </div>
+    <div class="sub-body">${body}</div>
+  </div>`;
+}
+function bindBack(back=()=>closeSub()){
+  const b=$('#subBack'); if(b) b.onclick=back;
+}
+function requireLogin(then){
+  if(isLogin()){ then(); return true; }
+  toast('请先登录');
+  setTimeout(()=>openLogin(),500);
+  return false;
+}
+
+/* ===================== 首页 ===================== */
+function rHome(){
+  return `
+  <div class="home">
+   <div class="header">
+    <div class="header-left-name"><h5>石家庄经济职业学院</h5><p>智慧校园移动端</p></div>
+    <div class="header-right"><img src="assets/logo.png" alt="石家庄经济职业学院"></div>
+   </div>
+   <div class="header-carousel">
+    <div class="header-carousel-view" id="bannerSlides">
+      <div class="header-carousel-item"><img class="header-carousel-img" src="assets/banner1.png"></div>
+      <div class="header-carousel-item"><img class="header-carousel-img" src="assets/banner2.png"></div>
+    </div>
+   </div>
+   <div class="top-nav">
+    <div class="roll-news">
+      <span class="horn">${I.horn}</span>
+      <div class="roll"><div class="roll-inner" id="rollInner">
+        <div class="roll-item">在“我的”里面可以查看帮助文档</div>
+        <div class="roll-item">功能完善：兼容部分iOS系统版本请假时间判断接口！！！</div>
+        <div class="roll-item">新功能：学生增加单独上传头像的功能，用于门禁出入。</div>
+      </div></div>
+    </div>
+   </div>
+   <div class="backlog">
+      <div class="b-item" data-go="0"><img class="backlog-img" src="assets/daiban.png" alt=""><div class="backlog-text">我的待办</div></div>
+      <div class="b-item" data-go="1"><img class="backlog-img" src="assets/yiban.png" alt=""><div class="backlog-text">我的已办</div></div>
+      <div class="b-item" data-go="2"><img class="backlog-img" src="assets/shenqing.png" alt=""><div class="backlog-text">我的申请</div></div>
+   </div>
+   <div class="scroll-zehngti">
+    <div class="often-nav elementScrollWitch">
+      <div class="often-scroll-view" id="oftenScroll">
+        <div class="often-scroll-view-const"><div class="often-scroll-view-itme" data-go="dianbiao"><img class="often-scroll-view-img" src="assets/dianbiao.png"><p class="often-scroll-view-itme-p">电表缴费</p></div></div>
+        <div class="often-scroll-view-const"><div class="often-scroll-view-itme" data-go="yikatong"><img class="often-scroll-view-img" src="assets/yikatong.png"><p class="often-scroll-view-itme-p">一卡通充值</p></div></div>
+        <div class="often-scroll-view-const"><div class="often-scroll-view-itme" data-go="qingjia"><img class="often-scroll-view-img" src="assets/qingjia.png"><p class="often-scroll-view-itme-p">我的请假</p></div></div>
+        <div class="often-scroll-view-const"><div class="often-scroll-view-itme" data-go="xueji"><img class="often-scroll-view-img" src="assets/xueji.png"><p class="often-scroll-view-itme-p">学籍异动</p></div></div>
+      </div>
+    </div>
+    <div class="scrllbar"><div class="scrllbar-background" id="scrllbarBg"></div></div>
+   </div>
+   <div class="often-nav-zhan">
+    <div class="query-left" data-go="dianhua">
+      <div class="query-left-h5">电话查询</div>
+      <div class="query-left-text">点击查看</div>
+      <img src="assets/dhcx.png">
+    </div>
+    <div class="query-right">
+      <div class="query-right-top" data-go="kecheng">
+        <div class="query-right-top-h5">课程表</div>
+        <img src="assets/kecheng.png">
+      </div>
+      <div class="query-right-bottom" data-go="xiaoli">
+        <div class="query-right-bottom-h5">校历</div>
+        <img src="assets/xl.png">
+      </div>
+    </div>
+   </div>
+  </div>`;
+}
+let bannerIdx=0,rollIdx=0,bannerTimer,rollTimer;
+function bindHome(){
+  // 轮播（scroll-snap 横滑，自动轮播）
+  const strip=$('#bannerSlides');
+  clearInterval(bannerTimer);
+  if(strip){
+    const slideW=()=>strip.clientWidth||1;
+    bannerTimer=setInterval(()=>{
+      bannerIdx=(bannerIdx+1)%2;
+      strip.scrollTo({left:bannerIdx*slideW(),behavior:'smooth'});
+    },3000);
+    strip.addEventListener('scroll',()=>{
+      bannerIdx=Math.round(strip.scrollLeft/slideW())%2;
+    },{passive:true});
+  }
+  // 公告垂直滚动
+  const inner=$('#rollInner');
+  clearInterval(rollTimer);
+  rollTimer=setInterval(()=>{
+    rollIdx=(rollIdx+1)%3;
+    inner.style.transform=`translateY(-${rollIdx*40}px)`;
+  },2600);
+  // 待办
+  document.querySelectorAll('.backlog .b-item').forEach(el=>{
+    el.onclick=()=>{ const i=el.dataset.go; requireLogin(()=>openTaskList(+i)); };
+  });
+  // 常用功能
+  document.querySelectorAll('.often-scroll-view-itme').forEach(el=>{
+    el.onclick=()=>{
+      const k=el.dataset.go;
+      const map={
+        dianbiao:()=>toast('正在跳转电表缴费…'),
+        yikatong:()=>toast('正在跳转一卡通充值…'),
+        qingjia:()=>requireLogin(()=>openLeaveList()),
+        xueji:()=>requireLogin(()=>openChange()),
+      };
+      (map[k]||(()=>{}))();
+    };
+  });
+  // 电话查询 / 课程表 / 校历
+  const infoMap={
+    dianhua:()=>requireLogin(()=>openPhoneBook()),
+    kecheng:()=>{
+      const el=document.querySelector('.query-right-top');
+      if(el){el.classList.add('enlarged');setTimeout(()=>el.classList.remove('enlarged'),300);}
+      openSchedule();
+    },
+    xiaoli:()=>openCalendar(),
+  };
+  document.querySelectorAll('.often-nav-zhan [data-go]').forEach(el=>{
+    el.onclick=()=>{ const k=el.dataset.go; (infoMap[k]||(()=>{}))(); };
+  });
+  // 常用功能横滚指示条（真实站逻辑：translateX(percent)）
+  const scv=$('#oftenScroll');
+  const sbg=$('#scrllbarBg');
+  if(scv&&sbg){
+    const updateScrllbar=()=>{
+      const max=scv.scrollWidth-scv.clientWidth;
+      const left=max>0?scv.scrollLeft/max*100:0;
+      sbg.style.transform=`translateX(${left}%)`;
+    };
+    scv.addEventListener('scroll',updateScrllbar,{passive:true});
+    setTimeout(updateScrllbar,300);
+  }
+}
+/* ===================== 应用页 ===================== */
+function rApps(){
+  const groups=[
+    {icon:I.layers,title:'学工管理',help:true,items:[
+      {icon:I.leave,name:'我的请假',act:'leave'},
+      {icon:I.confirm,name:'班级确认',act:'sure'},
+      {icon:I.club,name:'校园社团',act:'club'},
+      {icon:I.head,name:'更新头像',act:'avatar'},
+      {icon:I.cap,name:'学籍异动',act:'change'},
+    ]},
+    {icon:I.building,title:'宿舍管理',items:[
+      {icon:I.gearwrench,name:'学生报修',act:'repair'},
+    ]},
+    {icon:I.water,title:'日常生活',items:[
+      {icon:I.flash,name:'电表缴费',act:'dianbiao'},
+      {icon:I.card,name:'一卡通充值',act:'yikatong'},
+      {icon:I.houseyen,name:'学宿费',act:'xuesufei'},
+      {icon:I.yen,name:'其它费用',act:'qitafei'},
+    ]},
+    {icon:I.docs,title:'教务管理',items:[
+      {icon:I.grid,name:'课程表',act:'schedule'},
+      {icon:I.score,name:'成绩查询',act:'score'},
+    ]},
+  ];
+  return `
+  <div class="topbar">
+    <div class="title">校园应用</div>
+    <div class="sub">智慧校园移动端</div>
+  </div>
+  ${groups.map(g=>`
+    <div class="app-section">
+      <div class="sec-head">
+        <div class="ht">${g.icon}${g.title}</div>
+        ${g.help?'<div class="help" data-help><span style="margin-right:2px;">👉</span>查看帮助</div>':''}
+      </div>
+      <div class="app-grid">
+        ${g.items.map(it=>`<div class="a-item" data-act="${it.act}">${it.icon}<span>${it.name}</span></div>`).join('')}
+      </div>
+    </div>`).join('')}
+  `;
+}
+function bindApps(){
+  const help=$('[data-help]');
+  if(help) help.onclick=()=>openHelp();
+  document.querySelectorAll('.a-item').forEach(el=>{
+    el.onclick=()=>{
+      const act=el.dataset.act;
+      const map={
+        leave:()=>openLeaveList(),
+        sure:()=>openSure(),
+        repair:()=>openRepair(),
+        schedule:()=>openSchedule(),
+        score:()=>openScore(),
+        club:()=>openClub(),
+        avatar:()=>openAvatar(),
+        change:()=>openChange(),
+        dianbiao:()=>requireLogin(()=>toast('正在跳转电表缴费…')),
+        yikatong:()=>requireLogin(()=>toast('正在跳转一卡通充值…')),
+        xuesufei:()=>requireLogin(()=>toast('正在跳转学宿费缴纳…')),
+        qitafei:()=>requireLogin(()=>toast('正在跳转其它费用缴纳…')),
+      };
+      (map[act]||(()=>{}))();
+    };
+  });
+}
+
+/* ===================== 资讯页 ===================== */
+function rNews(){
+  const news=store.get('news',[
+    {id:1,title:'移动门户上线啦',desc:'移动门户上线啦，敬请关注！！！',date:'2026-09-01',
+     body:'各位老师、同学：\n\n学院智慧校园移动门户正式上线啦！移动端集成了我的待办、我的已办、我的申请、电表缴费、一卡通充值、我的请假、学生报修、课程表、成绩查询等常用功能，欢迎大家下载使用。\n\n使用过程中如有问题，请联系网络信息中心。'}
+  ]);
+  return `
+  <div class="topbar">
+    <div class="title">校园咨讯</div>
+    <div class="sub">智慧校园移动端</div>
+  </div>
+  <div class="news-wrap">
+    <div class="news-card">
+      <div class="nc-head"><span class="t">学校通知</span><span class="more" data-more>查看详情 ›</span></div>
+      ${news.map(n=>`
+        <div class="news-item" data-news="${n.id}">
+          <span class="ni-icon">${I.newsicon}</span>
+          <div class="ni-body">
+            <div class="ni-title">标题：${n.title}</div>
+            <div class="ni-desc">介绍：${n.desc}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+function bindNews(){
+  const m=$('[data-more]');
+  if(m) m.onclick=()=>openNewsDetail(1);
+  document.querySelectorAll('.news-item').forEach(el=>{
+    el.onclick=()=>openNewsDetail(+el.dataset.news);
+  });
+}
+
+/* ===================== 我的 ===================== */
+function rMine(){
+  const u=user();
+  return `
+  <div class="topbar" style="justify-content:flex-end;padding:22px 22px 4px;">
+    <div class="setting" data-setting>${I.setting}</div>
+  </div>
+  <div class="mine-wrap">
+    <div class="mine-profile">
+      <div class="mine-avatar">
+        ${u&&u.avatar?`<img src="${u.avatar}">`:I.person}
+      </div>
+      <div class="mine-info">
+        <div class="m-name">${u?u.name:'未登录'}</div>
+      </div>
+      <button class="edit-btn" data-edit>个人资料</button>
+    </div>
+    <div class="mine-help">
+      <div class="mh-head">${I.search}帮助中心</div>
+      <div class="mine-help-grid">
+        <div class="h-item" data-h="sure">${I.infodoc}<span>信息确认手册</span></div>
+        <div class="h-item" data-h="repair">${I.gearwrench}<span>报修操作手册</span></div>
+        <div class="h-item" data-h="leave">${I.editdoc}<span>学生请假手册</span></div>
+        <div class="h-item" data-h="change">${I.docs}<span>学籍异动手册</span></div>
+      </div>
+    </div>
+  </div>
+  ${u?`<button class="login-btn" id="pwdBtn" style="margin-bottom:14px;">修改密码</button>
+  <button class="login-btn" id="loginBtn">退出登录</button>`
+    :`<button class="login-btn" id="loginBtn">点击登录</button>`}
+  `;
+}
+function bindMine(){
+  const set=$('[data-setting]'); if(set) set.onclick=()=>toast('设置功能部署中…');
+  const edit=$('[data-edit]'); if(edit) edit.onclick=()=>{ const u=user(); if(u) openEditInfo(); else openLogin(); };
+  document.querySelectorAll('.h-item').forEach(el=>{
+    el.onclick=()=>openHelp(el.dataset.h);
+  });
+  const pwd=$('#pwdBtn'); if(pwd) pwd.onclick=()=>openChangePwd();
+  $('#loginBtn').onclick=async()=>{
+    if(user()){
+      const ok=await dialog('提示','确定退出登录？');
+      if(ok){ store.del('user'); toast('已退出登录'); renderPage(); }
+    }else openLogin();
+  };
+}
+
+/* ===================== 登录页 ===================== */
+const WX_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.7 3C4.9 3 2 5.5 2 8.6c0 1.8 1 3.3 2.6 4.4l-.6 1.9 2.2-1.1c.8.2 1.6.3 2.5.3h.5a4.6 4.6 0 0 1-.2-1.4c0-3 2.8-5.3 6.3-5.3h.5C15.3 4.7 12.3 3 8.7 3zm-2.3 4c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9zm4.6 0c.5 0 .9.4.9.9s-.4.9-.9.9-.9-.4-.9-.9.4-.9.9-.9z"/><path d="M22 13.2c0-2.6-2.5-4.7-5.6-4.7s-5.6 2.1-5.6 4.7 2.5 4.7 5.6 4.7c.7 0 1.3-.1 1.9-.3l1.8.9-.5-1.6c1.4-1 2.4-2.3 2.4-3.7zm-7.4-.8c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7zm3.7 0c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7z"/></svg>';
+function openLogin(){
+  openSub(`
+  <div class="sub-page" style="background:#fff;">
+    <div class="sub-nav" style="background:transparent;box-shadow:none;">
+      <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+    </div>
+    <div class="sub-body" style="overflow:hidden;">
+      <div class="sso-page">
+        <div class="sso-bg"></div>
+        <div class="sso-content">
+          <img class="sso-logo" src="assets/logo.png">
+          <div class="sso-tab">账号登录</div>
+          <div class="sso-form">
+            <div class="sso-field">
+              <span class="s-ico">${I.user}</span>
+              <input id="liUser" maxlength="18" inputmode="numeric" placeholder="请输入学号/工号">
+            </div>
+            <div class="sso-field">
+              <span class="s-ico">${I.lock}</span>
+              <input id="liPwd" type="password" maxlength="18" inputmode="numeric" placeholder="请输入密码">
+            </div>
+            <div class="sso-remember" id="liRemember">
+              <span class="cb">✓</span>7天免登录<span class="q">?</span>
+            </div>
+            <button class="sso-login" id="liLogin">登录</button>
+          </div>
+        </div>
+        <div class="sso-wx" id="liWx">
+          <div class="wxb">${WX_ICON}</div>
+          <span>微信</span>
+        </div>
+      </div>
+    </div>
+  </div>`);
+  bindBack();
+  $('#liRemember').onclick=()=>$('#liRemember').classList.toggle('on');
+  $('#liWx').onclick=()=>toast('微信授权登录…');
+  $('#liLogin').onclick=()=>{
+    const u=$('#liUser').value.trim(), p=$('#liPwd').value.trim();
+    const preset=ACCOUNTS[u];
+    if(!preset && !/^(\d{17}[\dXx]|2\d{10})$/.test(u)){ toast('账号须为18位身份证号，或11位以2开头的学号'); return; }
+    if(preset){
+      if(p!==u){ toast('密码与账号一致，请输入'+u); return; }
+    }else if(!/^.{6}$/.test(p)){ toast('密码必须为6位'); return; }
+    // 模拟登录：预置账号用各自姓名，其余写入真实学生信息
+    const baseUser=preset
+      ? {username:u,name:preset.name,avatar:'',gender:REAL.gender,birthday:REAL.birthday,sfz:REAL.sfz,
+         grade:REAL.grade,dept:REAL.dept,major:REAL.major,cls:REAL.cls,phone:REAL.phone}
+      : {username:REAL.xuehao,name:REAL.name,avatar:'',gender:REAL.gender,birthday:REAL.birthday,sfz:REAL.sfz,
+         grade:REAL.grade,dept:REAL.dept,major:REAL.major,cls:REAL.cls,phone:REAL.phone};
+    // 恢复该账号上次保存的资料（头像/手机号/编辑过的信息）
+    const saved=store.rawGet('prof_'+baseUser.username,null);
+    store.set('user', saved?Object.assign({},baseUser,saved):baseUser);
+    toast('登录成功，欢迎使用');
+    setTimeout(()=>{ closeSub(); renderPage(); },700);
+  };
+}
+
+/* ===================== 待办 / 已办 / 申请 ===================== */
+const TASK_TABS=['我的待办','我的已办','我的申请'];
+function openTaskList(idx){
+  idx=idx||0;
+  const body=`
+    <div class="task-sub">
+      <div class="ts-head" style="position:relative;">
+        <img src="assets/logo.png" class="ts-logo">
+        <div class="t">石家庄经济职业学院</div>
+        <div class="s">智慧校园移动端</div>
+      </div>
+      <div class="ts-card">
+        <div class="list-tabs" style="border-radius:18px 18px 0 0;">
+          ${TASK_TABS.map((t,i)=>`<div class="lt ${i===idx?'on':''}" data-lt="${i}">${t}</div>`).join('')}
+        </div>
+        ${idx===2?renderApplyList():`<div class="empty-state">${I.searchEmpty}<p>~空空如也~</p></div>`}
+      </div>
+    </div>
+  `;
+  const html=`
+    <div class="sub-page" style="background:#fafafa;">
+      <div class="sub-nav" style="background:transparent;box-shadow:none;color:#fff;position:absolute;top:0;left:0;right:0;z-index:10;">
+        <div class="back" id="subBack" style="color:#fff;">${I.back}</div>
+      </div>
+      <div class="sub-body">${body}</div>
+    </div>`;
+  openSub(html);
+  bindBack();
+  document.querySelectorAll('.lt').forEach(el=>{
+    el.onclick=()=>openTaskList(+el.dataset.lt);
+  });
+  document.querySelectorAll('#applyList .apply-card').forEach(el=>{
+    el.onclick=()=>{
+      const kind=el.dataset.kind;
+      const id=+el.dataset.id;
+      if(kind==='repair') openRepairDetail(id);
+      else openLeaveDetail(id);
+    };
+  });
+}
+/* 我的申请：动态读取请假/报修等已提交单据，与各模块保持同步 */
+function renderApplyList(){
+  const u=user();
+  const leaves=store.get('leaves',defaultLeaves())||[];
+  const repairs=(store.get('repairs',defaultRepairs())||[]).filter(r=>!r.seed);
+  const cards=[];
+  leaves.forEach(l=>{
+    let ftime='';
+    if(l.no&&/^\d{14,}/.test(l.no)){
+      ftime=l.no.slice(0,4)+'-'+l.no.slice(4,6)+'-'+l.no.slice(6,8)+' '+l.no.slice(8,10)+':'+l.no.slice(10,12)+':'+l.no.slice(12,14);
+    }else{ ftime=(l.time||'').split('~')[0].trim(); }
+    cards.push(`
+      <div class="apply-card" data-id="${l.id}" data-kind="leave">
+        <div class="ac-top">
+          <span class="t">${displayName()}请假</span>
+          <span class="st st-${stKey(l.status)}">${l.status}</span>
+        </div>
+        <div class="ac-line"><b>所属应用：</b>学工管理系统</div>
+        <div class="ac-line"><b>业务场景：</b>学生请假（${l.type}）</div>
+        <div class="ac-line"><b>发起人：</b>${displayName()}</div>
+        <div class="ac-line"><b>处理人：</b>${l.auditor||'—'}</div>
+        <div class="ac-line"><b>发起时间：</b>${ftime}</div>
+      </div>`);
+  });
+  repairs.forEach(r=>{
+    cards.push(`
+      <div class="apply-card" data-id="${r.id}" data-kind="repair">
+        <div class="ac-top">
+          <span class="t">${displayName()}报修</span>
+          <span class="st st-${stKey(r.status)}">${r.status}</span>
+        </div>
+        <div class="ac-line"><b>所属应用：</b>学生报修系统</div>
+        <div class="ac-line"><b>业务场景：</b>学生报修（${r.type}）</div>
+        <div class="ac-line"><b>发起人：</b>${displayName()}</div>
+        <div class="ac-line"><b>维修地点：</b>${r.place||'—'}</div>
+        <div class="ac-line"><b>发起时间：</b>${r.time||'—'}</div>
+      </div>`);
+  });
+  if(!cards.length){
+    return `<div class="empty-state">${I.searchEmpty}<p>~空空如也~</p></div>`;
+  }
+  return `<div id="applyList">${cards.join('')}</div>`;
+}
+function stKey(s){
+  if(!s) return 'ing';
+  if(/通过|同意|完成|结束/.test(s)) return 'pass';
+  if(/驳回|不通过|退回|拒绝/.test(s)) return 'reject';
+  if(/待|流程中|审批中/.test(s)) return 'ing';
+  return 'ing';
+}
+
+/* ===================== 真实数据（来自登录账号） ===================== */
+
+/* 隐私字段保护：源码只存数字密文，运行时解出原文（页面显示完全不变） */
+function D(s){
+  var K=[176,23,62,50,66,149,227,186,110,99,106,14,199,73,199,199,97,113,133,19,201,74,139,151,40,70,24,231,118,131,37,170];
+  var bytes=[],i,txt='';
+  for(i=0;i+3<=s.length;i+=3){ bytes.push(parseInt(s.substr(i,3),10)); }
+  for(i=0;i<bytes.length;i++){ txt+=String.fromCharCode(bytes[i]^K[i%K.length]); }
+  try{ return decodeURIComponent(escape(txt)); }catch(e){ return txt; }
+}
+
+const REAL={
+  name:D('085145190215248019006002235'),
+  gender:'男',
+  birthday:'2006-04-01',
+  identity:'学生',
+  sfz:D('129036014006113166209138094085090058247120244246080068'),
+  xuehao:D('130038010007122173213138'),
+  grade:'2025级',
+  dept:'经济管理系',
+  major:'酒店管理与数字化运营',
+  cls:'25酒店管理2班',
+  phone:D('129047006001114164210139090086094'),
+  repairman:D('129036013005113166210131092081092'),
+  dorm:D('085185129218202024005031210078071063245172072112135212057062228123110038170107053214071182'),
+};
+// 预置演示账号（密码与账号一致）
+const ACCOUNTS={
+  '20000000001':{name:D('086138176213246062011052215')},
+  '20000000002':{name:D('085171158215239005004042196')},
+  '20000000003':{name:D('089186177214250021006061207')},
+};
+// 默认登录用户（演示）
+function ensureUser(){
+  let u=user();
+  if(!u){
+    u={username:REAL.xuehao,name:REAL.name,avatar:'',gender:REAL.gender,birthday:REAL.birthday,sfz:REAL.sfz,
+       grade:REAL.grade,dept:REAL.dept,major:REAL.major,cls:REAL.cls,phone:REAL.phone};
+    const saved=store.rawGet('prof_'+u.username,null);
+    if(saved) u=Object.assign({},u,saved);
+    store.set('user',u);
+  }
+  return u;
+}
+
+/* ===================== 请假（默认详情，可切列表） ===================== */
+function defaultLeaves(){
+  return []; // 清空所有请假记录
+}
+function openLeaveList(){
+  const u=user();
+  const leaves=store.get('leaves',defaultLeaves());
+  const html=`
+  <div class="sub-page">
+    <div class="sub-nav" style="background:transparent;box-shadow:none;">
+      <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+    </div>
+    <div class="sub-body">
+      ${leaves.length?leaves.map(l=>{
+        let ftime=(l.time||'').split('~')[0].trim();
+        if(l.no&&/^\d{14,}/.test(l.no)){
+          ftime=l.no.slice(0,4)+'-'+l.no.slice(4,6)+'-'+l.no.slice(6,8)+' '+l.no.slice(8,10)+':'+l.no.slice(10,12)+':'+l.no.slice(12,14);
+        }
+        return `
+        <div class="lv-item" data-id="${l.id}">
+          <div class="lv-item-top">
+            <span class="lv-who">学生姓名：${displayName()}</span>
+            <span class="lv-more">申请详情 ${I.arrow}</span>
+          </div>
+          <div class="lv-row"><span class="lab">流程单号：</span><span class="val track">${l.no||'—'}</span></div>
+          <div class="lv-row"><span class="lab">请假类型：</span><span class="val">${l.type}</span></div>
+          <div class="lv-row lv-time"><span class="lab">请假时间：</span><span class="val">${l.time||ftime}</span></div>
+          <div class="lv-row"><span class="lab">手机号码：</span><span class="val track">${l.phone||u.phone||''}</span></div>
+          ${stKey(l.status)==='ing'?`<div class="lv-row"><span class="lab">待审批人：</span><span class="val">${l.auditor||'—'}</span></div>`:''}
+          <div class="lv-row"><span class="lab">申请状态：</span><span class="val track">${l.status||'流程中'}</span></div>
+        </div>`;
+      }).join(''):`<div class="empty-state">${I.searchEmpty}<p>暂无请假记录，点击右下角新增</p></div>`}
+    </div>
+    <button class="fab" id="fabAdd">${I.plus}</button>
+  </div>`;
+  openSub(html);
+  bindBack();
+  document.querySelectorAll('.lv-item').forEach(el=>{
+    el.onclick=()=>openLeaveDetail(+el.dataset.id);
+  });
+  $('#fabAdd').onclick=()=>openLeaveForm();
+}
+function openLeaveDetail(id){
+  const u=user();
+  const leaves=store.get('leaves',defaultLeaves());
+  const l=leaves.find(x=>x.id===id)||leaves[0];
+  const fields=[
+    ['流程单号',l.no,true],
+    ['学生姓名',displayName()],
+    ['手机号码',l.phone||u.phone||'',true],
+    ['请假类型',l.type],
+    ['请假时间',l.time],
+    ['请假原因',l.reason||'有事'],
+    ['待审核人员',l.auditor],
+    ['申请状态',statusBadge(l.status)],
+  ];
+  const body=`
+    <div class="d-detail">
+      ${fields.map(([lab,val,track])=>`
+        <div class="dd-block">
+          <div class="dd-lab">${lab}</div>
+          <div class="dd-val" ${track?'style="letter-spacing:1px;"':''}>${val}</div>
+        </div>`).join('')}
+      <div class="dd-block">
+        <div class="dd-lab">附件图片</div>
+        <div class="dd-empty"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="blue-btn red" id="urBtn">催办</button>
+    </div>
+  `;
+  openSub(lightShell('请假详情',body));
+  bindBack(()=>openLeaveList());
+  $('#urBtn').onclick=()=>toast('已提醒审批人处理');
+}
+
+/* ===================== 请假表单 ===================== */
+// 请假天数：按起止时间算，保留 1 位小数
+function calcDays(s,e){
+  const a=new Date(s), b=new Date(e);
+  if(isNaN(a)||isNaN(b)||b<=a) return 1;
+  return Math.max(0.5, Math.round((b-a)/86400000*10)/10);
+}
+function genFlowNo(){
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}${String(Math.floor(Math.random()*9000+1000))}`;
+}
+function openLeaveForm(editId){
+  const u=user();
+  const allLeaves=store.get('leaves',defaultLeaves());
+  const edit=editId!=null?(allLeaves.find(x=>x.id===editId)||null):null;
+  const splitTime=s=>{ if(!s)return ''; const m=String(s).match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/); return m?`${m[1]}T${m[2]}`:''; };
+  const editStart=edit?(edit.start||splitTime(edit.time&&edit.time.split('~')[0])):'';
+  const editEnd=edit?(edit.end||splitTime(edit.time&&edit.time.split('~')[1])):'';
+  const body=`
+    <div class="lv-form">
+      <div class="lv-card">
+        <div class="lv-row">
+          <span class="lab"><span class="req">*</span>请假流程：</span>
+          <select id="fFlow"><option>学生请假模板3</option></select>
+          <span class="ic">${I.chev}</span>
+        </div>
+      </div>
+      <div class="lv-card">
+        <div class="lv-row">
+          <span class="lab"><span class="req">*</span>请假类型：</span>
+          <select id="fType"><option value="">请选择请假类型</option><option>其他情况</option><option>病假外出</option><option>事假外出</option></select>
+          <span class="ic">${I.chev}</span>
+        </div>
+      </div>
+      <div class="lv-card">
+        <div class="lv-row" data-time="start">
+          <span class="lab"><span class="req">*</span>开始时间：</span>
+          <span class="val ph" id="fStartText">请选择时间</span>
+          <span class="ic">${I.cal2}</span>
+          <input type="datetime-local" id="fStart" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+        </div>
+      </div>
+      <div class="lv-card">
+        <div class="lv-row" data-time="end">
+          <span class="lab"><span class="req">*</span>结束时间：</span>
+          <span class="val ph" id="fEndText">请选择时间</span>
+          <span class="ic">${I.cal2}</span>
+          <input type="datetime-local" id="fEnd" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+        </div>
+      </div>
+      <div class="lv-card">
+        <div class="lv-row">
+          <span class="lab"><span class="req">*</span>电话：</span>
+          <input id="fPhone" placeholder="请输入电话">
+        </div>
+      </div>
+      <div class="lv-card">
+        <div class="lv-row">
+          <span class="lab"><span class="req">*</span>验证码：</span>
+          <input id="fCode" placeholder="请输入验证码">
+          <button class="vcode-btn" id="fCodeBtn" type="button">获取验证码</button>
+        </div>
+      </div>
+      <div class="lv-card block">
+        <div class="lv-row">
+          <span class="lab"><span class="req">*</span>请假原因：</span>
+          <textarea id="fReason" placeholder="请输入请假原因"></textarea>
+        </div>
+      </div>
+      <div class="lv-card block">
+        <div class="lv-upload-head">
+          <span>附件图片：</span>
+          <span class="cnt"><span id="fCnt">0</span>/5</span>
+        </div>
+        <div style="font-size:14px;color:#333;margin-bottom:10px;">请选择附件图片</div>
+        <div class="lv-upload-box" id="fUpload">${I.upload}</div>
+      </div>
+    </div>
+    <button class="blue-btn" id="fSubmit">保存提交</button>
+  `;
+  openSub(lightShell('请假申请',body));
+  bindBack(()=>openLeaveList());
+  const fmt=s=>s.replace('T',' ');
+  // 编辑模式：回填原单内容
+  if(edit){
+    $('#fType').value=edit.type||'';
+    if(editStart){ $('#fStart').value=editStart; $('#fStartText').textContent=fmt(editStart); $('#fStartText').classList.remove('ph'); }
+    if(editEnd){ $('#fEnd').value=editEnd; $('#fEndText').textContent=fmt(editEnd); $('#fEndText').classList.remove('ph'); }
+    $('#fPhone').value=edit.phone||'';
+    $('#fReason').value=edit.reason||'';
+    $('#fSubmit').textContent='保存修改';
+  }
+  // 时间选择：点击文字触发隐藏的 datetime-local
+  document.querySelectorAll('[data-time]').forEach(row=>{
+    const key=row.dataset.time;
+    const inp=key==='start'?$('#fStart'):$('#fEnd');
+    const txt=key==='start'?$('#fStartText'):$('#fEndText');
+    row.onclick=()=>{ inp.showPicker ? inp.showPicker() : inp.click(); };
+    inp.addEventListener('change',()=>{ if(inp.value){ txt.textContent=fmt(inp.value); txt.classList.remove('ph'); } });
+  });
+  // 获取验证码：先检查电话
+  let codeTimer=0;
+  $('#fCodeBtn').onclick=()=>{
+    const phone=$('#fPhone').value.trim();
+    if(!/^1\d{10}$/.test(phone)){
+      phoneCheckDialog((newPhone)=>{
+        $('#fPhone').value=newPhone;
+        startCode();
+      });
+      return;
+    }
+    startCode();
+  };
+  function startCode(){
+    if(codeTimer) return;
+    let n=60; codeTimer=1;
+    const btn=$('#fCodeBtn');
+    toast('验证码已发送（演示：1234）');
+    const t=setInterval(()=>{ n--; btn.textContent=n+'s'; btn.style.opacity='.6'; if(n<=0){clearInterval(t);btn.textContent='获取验证码';btn.style.opacity='1';codeTimer=0;} },1000);
+  }
+  // 附件（模拟计数）
+  let cnt=edit?(edit.attachCnt||0):0;
+  if(edit) $('#fCnt').textContent=cnt;
+  $('#fUpload').onclick=()=>{ if(cnt>=5){toast('最多上传5张');return;} cnt++; $('#fCnt').textContent=cnt; toast('已选择附件图片'); };
+  // 提交
+  $('#fSubmit').onclick=()=>{
+    const flow=($('#fFlow')||{}).value||'学生请假模板3',
+          type=$('#fType').value, start=$('#fStart').value, end=$('#fEnd').value,
+          phone=$('#fPhone').value.trim(), code=$('#fCode').value.trim(), reason=$('#fReason').value.trim();
+    if(!type){ toast('请选择请假类型'); return; }
+    if(!start){ toast('请选择开始时间'); return; }
+    if(!end){ toast('请选择结束时间'); return; }
+    if(new Date(end)<=new Date(start)){ toast('结束时间需晚于开始时间'); return; }
+    if(!phone){ toast('请输入电话'); return; }
+    if(!code){ toast('请输入验证码'); return; }
+    if(!reason){ toast('请输入请假原因'); return; }
+    const leaves=store.get('leaves',defaultLeaves());
+    if(edit){
+      const idx=leaves.findIndex(x=>x.id===edit.id);
+      if(idx>=0){
+        leaves[idx]=Object.assign({},leaves[idx],{flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,phone,reason,attachCnt:cnt});
+        toast('修改已保存');
+      }else{
+        leaves.unshift({id:Date.now(),no:genFlowNo(),flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
+        toast('提交成功');
+      }
+    }else{
+      leaves.unshift({id:Date.now(),no:genFlowNo(),flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
+      toast('提交成功');
+    }
+    store.set('leaves',leaves);
+    store.set('user',Object.assign({},u,{phone}));
+    setTimeout(()=>openLeaveList(),700);
+  };
+}
+// 电话检查弹窗
+function phoneCheckDialog(cb){
+  const mask=document.createElement('div');
+  mask.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center;';
+  mask.innerHTML=`
+    <div style="background:#fff;border-radius:16px;width:80%;padding:28px 22px 0;">
+      <div style="text-align:center;font-size:18px;margin-bottom:20px;">请检查电话号码是否正确！</div>
+      <div style="border:1px solid #eee;border-radius:12px;padding:12px 16px;display:flex;align-items:center;margin-bottom:20px;">
+        <span style="color:#333;font-size:16px;margin-right:10px;">电话：</span>
+        <input id="pcPhone" placeholder="请输入电话" style="flex:1;border:none;outline:none;font-size:16px;">
+      </div>
+      <div style="display:flex;border-top:1px solid #f0f0f0;margin:0 -22px;">
+        <button id="pcCancel" style="flex:1;height:54px;border:none;background:transparent;color:#999;font-size:17px;border-right:1px solid #f0f0f0;">取消</button>
+        <button id="pcOk" style="flex:1;height:54px;border:none;background:transparent;color:#5a7cf6;font-size:17px;font-weight:600;">确定</button>
+      </div>
+    </div>`;
+  $('#sub').appendChild(mask);
+  $('#pcCancel').onclick=()=>mask.remove();
+  $('#pcOk').onclick=()=>{
+    const p=$('#pcPhone').value.trim();
+    if(!/^1\d{10}$/.test(p)){ toast('请输入正确的11位手机号'); return; }
+    mask.remove(); cb(p);
+  };
+}
+
+/* ===================== 学生报修 ===================== */
+function defaultRepairs(){
+  return [{id:1,seed:true,type:'水工类',time:'2026-10-23 11:07:10',place:D('085185129218202024005031210078071063245172072112135212057062228123110038170107053214071182'),addr:D('129037027003115160'),status:'待审批',desc:'水龙头漏水'}];
+}
+function openRepair(){
+  const reps=store.get('repairs',defaultRepairs());
+  if(!reps.length){
+    const html=`
+    <div class="sub-page">
+      <div class="sub-nav" style="background:transparent;box-shadow:none;color:#333;">
+        <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+        <div class="nav-title">学生报修列表</div>
+      </div>
+      <div class="sub-body"><div class="empty-state">${I.empty}<p>~ 空空如也 ~</p></div></div>
+      <button class="fab" id="fabAdd">${I.plus}</button>
+    </div>`;
+    openSub(html); bindBack(); $('#fabAdd').onclick=()=>openRepairForm();
+    return;
+  }
+  const r=reps[0];
+  const html=`
+  <div class="sub-page">
+    <div class="sub-nav" style="background:transparent;box-shadow:none;color:#333;">
+      <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+    </div>
+    <div class="sub-body">
+      <div class="rp-wrap">
+        <div class="rp-status">
+          <span class="s">维修状态：${statusBadge(r.status)}</span>
+          <span class="d" id="rpDetail">申请详情</span>
+        </div>
+        <div class="ld-card">
+          <div class="ld-row"><span class="lab">维修类型：</span><span class="val">${r.type}</span></div>
+          <div class="ld-row"><span class="lab">申请时间：</span><span class="val">${r.time}</span></div>
+          <div class="ld-row"><span class="lab">维修地点：</span><span class="val">${r.place}</span></div>
+          <div class="ld-row"><span class="lab">详细地址：</span><span class="val">${r.addr}</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="fab" id="fabAdd">${I.plus}</button>
+  </div>`;
+  openSub(html);
+  bindBack();
+  $('#rpDetail').onclick=()=>openRepairDetail(r.id);
+  $('#fabAdd').onclick=()=>openRepairForm();
+}
+function openRepairDetail(id){
+  const reps=store.get('repairs',defaultRepairs());
+  const r=reps.find(x=>x.id===id)||reps[0];
+  const fields=[['维修类型',r.type],['申请时间',r.time],['维修地点',r.place],['详细地址',r.addr],['问题描述',r.desc||''],['维修状态',statusBadge(r.status)]];
+  const body=`<div class="d-detail">${fields.map(([lab,val])=>`<div class="dd-block"><div class="dd-lab">${lab}</div><div class="dd-val">${val}</div></div>`).join('')}</div>
+    <div class="btn-row"><button class="blue-btn outline" id="rpEditBtn">编辑</button></div>`;
+  openSub(lightShell('报修详情',body));
+  bindBack(()=>openRepair());
+  $('#rpEditBtn').onclick=()=>openRepairForm(r.id);
+}
+function openRepairForm(editId){
+  const allReps=store.get('repairs',defaultRepairs());
+  const edit=editId!=null?(allReps.find(x=>x.id===editId)||null):null;
+  const body=`
+    <div class="tip-bar">
+      <div class="t">维修工联系电话：</div>
+      <div class="n">${REAL.repairman}</div>
+    </div>
+    <div class="pill-fields">
+      <div class="pill-field">
+        <span class="lab"><span class="req">*</span>联系方式：</span>
+        <input id="rPhone" placeholder="请输入联系方式">
+      </div>
+      <div class="pill-field">
+        <span class="lab">固定电话：</span>
+        <input id="rTel" placeholder="请输入固定电话">
+      </div>
+      <div class="pill-field" data-pick="place">
+        <span class="lab"><span class="req">*</span>维修地点：</span>
+        <select id="rPlace"><option value="">请选择维修地点</option><option>宿舍楼</option><option>教学楼</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab"><span class="req">*</span>详细地址：</span>
+        <input id="rAddr" placeholder="请输入详细地址">
+      </div>
+      <div class="pill-field" data-pick="time">
+        <span class="lab"><span class="req">*</span>预约维修时间：</span>
+        <span class="val ph" id="rTimeText" style="flex:1;text-align:right;">请选择预约维修时间</span>
+        <input type="datetime-local" id="rTime" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab"><span class="req">*</span>报修类型：</span>
+        <select id="rType"><option value="">请选择报修类型</option><option>电工类</option><option>水工类</option><option>木、金、瓦工类</option><option>其他</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field" style="min-height:130px;align-items:flex-start;padding-top:16px;">
+        <span class="lab"><span class="req">*</span>问题描述：</span>
+        <textarea id="rDesc" placeholder="请输入问题描述"></textarea>
+      </div>
+    </div>
+    <div class="lv-card block" style="margin:0 16px;">
+      <div class="lv-upload-head">
+        <span><span class="req" style="color:#e8504a;">*</span>故障图片：</span>
+        <span class="cnt"><span id="rCnt">0</span>/4</span>
+      </div>
+      <div style="font-size:14px;color:#333;margin-bottom:10px;">请选择故障图片</div>
+      <div class="lv-upload-box" id="rUpload">${I.upload}</div>
+    </div>
+    <button class="blue-btn" id="rSubmit">保存提交</button>
+  `;
+  openSub(lightShell('学生报修申请',body));
+  bindBack(()=>openRepair());
+  const fmt=s=>s.replace('T',' ');
+  if(edit){
+    $('#rPhone').value=edit.phone||'';
+    $('#rTel').value=edit.tel||'';
+    $('#rPlace').value=(edit.place?edit.place.split('--')[0]:'')||'';
+    $('#rAddr').value=edit.addr||'';
+    if(edit.apptTime){ $('#rTime').value=edit.apptTime; $('#rTimeText').textContent=fmt(edit.apptTime); $('#rTimeText').classList.remove('ph'); }
+    $('#rType').value=edit.type||'';
+    $('#rDesc').value=edit.desc||'';
+    $('#rSubmit').textContent='保存修改';
+  }
+  const timeRow=document.querySelector('[data-pick="time"]');
+  timeRow.onclick=()=>{ const inp=$('#rTime'); inp.showPicker?inp.showPicker():inp.click(); };
+  $('#rTime').addEventListener('change',()=>{ const v=$('#rTime').value; if(v){ $('#rTimeText').textContent=fmt(v); $('#rTimeText').classList.remove('ph'); } });
+  let cnt=edit?(edit.attachCnt||0):0;
+  if(edit) $('#rCnt').textContent=cnt;
+  $('#rUpload').onclick=()=>{ if(cnt>=4){toast('最多上传4张');return;} cnt++; $('#rCnt').textContent=cnt; toast('已选择故障图片'); };
+  $('#rSubmit').onclick=()=>{
+    const phone=$('#rPhone').value.trim(), place=$('#rPlace').value, addr=$('#rAddr').value.trim(),
+          time=$('#rTimeText').textContent, type=$('#rType').value, desc=$('#rDesc').value.trim();
+    if(!phone){ toast('请输入联系方式'); return; }
+    if(!place){ toast('请选择维修地点'); return; }
+    if(!addr){ toast('请输入详细地址'); return; }
+    if($('#rTimeText').classList.contains('ph')){ toast('请选择预约维修时间'); return; }
+    if(!type){ toast('请选择报修类型'); return; }
+    if(!desc){ toast('请输入问题描述'); return; }
+    const now=new Date(),p=n=>String(n).padStart(2,'0');
+    const tel=$('#rTel').value.trim(), apptISO=$('#rTime').value;
+    const reps=store.get('repairs',defaultRepairs());
+    const buildRec=()=>({id:Date.now(),type,time:`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`,
+      place:`${place}--${D('129037219189245115070006067078091235118203')}--${addr}`,addr,desc,phone,tel,apptTime:apptISO,attachCnt:cnt,status:'待审批'});
+    if(edit){
+      const idx=reps.findIndex(x=>x.id===edit.id);
+      if(idx>=0){
+        reps[idx]=Object.assign({},reps[idx],{phone,tel,place:`${place}--${D('129037219189245115070006067078091235118203')}--${addr}`,addr,apptTime:apptISO,type,desc,attachCnt:cnt});
+        toast('修改已保存');
+      }else{
+        reps.unshift(buildRec());
+        toast('报修提交成功');
+      }
+    }else{
+      reps.unshift(buildRec());
+      toast('报修提交成功');
+    }
+    store.set('repairs',reps);
+    setTimeout(()=>openRepair(),700);
+  };
+}
+
+/* ===================== 信息确认（班级确认） ===================== */
+function openSure(){
+  const u=ensureUser();
+  const info=store.get('sureinfo',null);
+  const body=`
+    <div class="pill-fields" style="padding-top:20px;">
+      <div class="pill-field readonly">
+        <span class="lab">姓名：</span>
+        <span class="val">${REAL.name}</span>
+      </div>
+      <div class="pill-field readonly">
+        <span class="lab">身份证号：</span>
+        <span class="val" style="font-size:15px;">${REAL.sfz}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab">年级：</span>
+        <select id="sGrade"><option>${REAL.grade}</option><option>2024级</option><option>2023级</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab">院系：</span>
+        <select id="sDept"><option>${REAL.dept}</option><option>护理系</option><option>机电工程系</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab">专业：</span>
+        <select id="sMajor"><option>${REAL.major}</option><option>旅游管理</option><option>大数据技术</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+      <div class="pill-field">
+        <span class="lab"><span class="req">*</span>班级：</span>
+        <select id="sCls"><option>${REAL.cls}</option><option>25酒店管理1班</option><option>25酒店管理3班</option></select>
+        <span class="chev">${I.chev}</span>
+      </div>
+    </div>
+    <button class="blue-btn" id="sSubmit">确认信息</button>
+  `;
+  openSub(lightShell('班级确认',body));
+  bindBack();
+  $('#sSubmit').onclick=()=>{
+    const cls=$('#sCls').value;
+    if(!cls){ toast('请选择班级'); return; }
+    store.set('sureinfo',{grade:$('#sGrade').value,dept:$('#sDept').value,major:$('#sMajor').value,cls,time:new Date().toLocaleString('zh-CN')});
+    toast('信息确认成功');
+    setTimeout(()=>closeSub(),700);
+  };
+}
+
+/* ===================== 课程表 ===================== */
+/* ===================== 电话查询 ===================== */
+function openPhoneBook(){
+  const phones=[
+    {n:'学院办公室',p:'0311-88888888'},
+    {n:'招生就业处',p:'0311-88888889'},
+    {n:'学生工作处',p:'0311-88888890'},
+    {n:'宿舍管理中心',p:'0311-88888891'},
+    {n:'保卫处',p:'0311-88888892'},
+    {n:'网络信息中心',p:'0311-88888893'},
+    {n:'财务处',p:'0311-88888894'},
+    {n:'医务室',p:'0311-88888895'},
+  ];
+  const body=`
+    <div style="padding:14px;font-size:14px;color:#666;">常用电话（点击号码可拨打）</div>
+    <div class="form-card" style="margin:0 10px;border-radius:12px;">
+      ${phones.map((t,i)=>`<div class="form-row" style="padding:16px 14px;">
+        <span style="flex:1;font-size:15px;">${t.n}</span>
+        <a href="tel:${t.p}" style="color:#d9743c;font-size:14px;text-decoration:none;">${t.p}</a>
+      </div>`).join('')}
+    </div>
+    <div style="height:20px;"></div>
+  `;
+  openSub(lightShell('电话查询',body));
+  bindBack();
+}
+
+/* ===================== 校历 ===================== */
+function openCalendar(){
+  const events=[
+    {d:'2026-09-01',t:'秋季学期开学',c:'blue'},
+    {d:'2026-09-15',t:'新生报到',c:'orange'},
+    {d:'2026-10-01',t:'国庆节放假',c:'red'},
+    {d:'2026-11-10',t:'期中考试',c:'blue'},
+    {d:'2027-01-01',t:'元旦放假',c:'red'},
+    {d:'2027-01-15',t:'期末考试',c:'orange'},
+    {d:'2027-01-22',t:'寒假开始',c:'green'},
+  ];
+  const body=`
+    <div style="padding:14px;font-size:14px;color:#666;">2026-2027学年第一学期校历</div>
+    <div class="form-card" style="margin:0 10px;border-radius:12px;">
+      ${events.map((t,i)=>`<div class="form-row" style="padding:16px 14px;">
+        <span style="width:110px;flex:0 0 110px;font-size:14px;color:#888;">${t.d}</span>
+        <span style="flex:1;font-size:15px;">${t.t}</span>
+        <span class="tag ${t.c}">${t.c==='red'?'节假日':t.c==='orange'?'重要':'教学'}</span>
+      </div>`).join('')}
+    </div>
+    <div style="height:20px;"></div>
+  `;
+  openSub(lightShell('校历',body));
+  bindBack();
+}
+
+/* ===================== 课程表 ===================== */
+function openSchedule(){
+  const days=['周一','周二','周三','周四','周五','周六','周日'];
+  const periods=[
+    [1,'9:00'],[2,'10:30'],[3,'10:40'],[4,'12:10'],
+    [5,'13:30'],[6,'15:00'],[7,'15:20'],[8,'16:50'],
+  ];
+  const deco=`
+    <svg class="schedule-deco" viewBox="0 0 400 900" preserveAspectRatio="xMidYMid slice">
+      <g stroke="rgba(255,255,255,.22)" fill="none" stroke-width="1">
+        ${[120,140,160,178,196,214,232,250,268,286].map(x=>`<path d="M${x} -20 C${x} 300 ${x>200?330:230} 500 ${x>200?300:250} 620 C${x>200?270:230} 720 ${x>200?240:300} 920 ${x>200?210:330} 920"/>`).join('')}
+      </g>
+      <g stroke="rgba(255,255,255,.55)" fill="none" stroke-width="1.2">
+        <path d="M360 540 L345 500 L340 470"/>
+        <path d="M350 700 L375 650 L372 610"/>
+        <path d="M30 800 L60 740 L70 700"/>
+        <path d="M150 820 L120 780 L100 750"/>
+        <path d="M260 780 L230 720"/>
+      </g>
+      <g fill="rgba(255,255,255,.5)">
+        <circle cx="340" cy="470" r="2.5"/><circle cx="345" cy="500" r="2.5"/><circle cx="375" cy="650" r="2.5"/>
+        <circle cx="372" cy="610" r="2.5"/><circle cx="60" cy="740" r="2.5"/><circle cx="70" cy="700" r="2.5"/>
+        <circle cx="120" cy="780" r="2.5"/><circle cx="100" cy="750" r="2.5"/><circle cx="230" cy="720" r="2.5"/>
+      </g>
+      <g fill="rgba(255,255,255,.32)">
+        <circle cx="270" cy="210" r="14"/><circle cx="360" cy="400" r="11"/><circle cx="380" cy="600" r="20"/>
+        <circle cx="90" cy="330" r="17"/><circle cx="160" cy="430" r="20"/><circle cx="265" cy="500" r="10"/>
+        <circle cx="80" cy="600" r="11"/><circle cx="90" cy="680" r="9"/><circle cx="300" cy="800" r="11"/>
+        <circle cx="380" cy="820" r="12"/><circle cx="360" cy="340" r="8"/><circle cx="375" cy="440" r="9"/>
+      </g>
+      <g fill="rgba(255,255,255,.22)">
+        <circle cx="220" cy="120" r="8"/><circle cx="150" cy="60" r="6"/><circle cx="300" cy="660" r="6"/>
+      </g>
+    </svg>`;
+  const body=`
+    <div class="schedule-page">
+      ${deco}
+      <div class="schedule-head">
+        <div class="j">节</div>
+        ${days.map(d=>`<div>${d}</div>`).join('')}
+      </div>
+      <div class="schedule-body">
+        ${periods.map(([n,t])=>`
+          <div class="schedule-row">
+            <div class="j"><div class="n">${n}</div><div class="t">${t}</div></div>
+            ${days.map(()=>`<div class="cell"></div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+  const html=`
+    <div class="sub-page" style="background:linear-gradient(180deg,#7fc7e8,#5aa9d6);">
+      <div class="sub-nav" style="background:transparent;box-shadow:none;color:#333;position:absolute;top:0;left:0;right:0;z-index:10;">
+        <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+      </div>
+      <div class="sub-body" style="padding-top:50px;">${body}</div>
+    </div>`;
+  openSub(html);
+  bindBack();
+}
+
+/* ===================== 成绩查询 ===================== */
+const TERMS=['2025~2026学年第二学期','2025~2026学年第一学期','2024~2025学年第二学期','2024~2025学年第一学期','2023~2024学年第二学期','2023~2024学年第一学期','2022~2023学年第二学期','2022~2023学年第一学期','2021~2022学年第二学期'];
+const SCORE_DATA={
+  '2025~2026学年第二学期':[
+    ['体育二',80,80,80],
+    ['饭店业概述',75,30,62],
+    ['管理沟通',62,82,68],
+    ['大英二',80,71.666666666667,78],
+    ['毛泽东思想与中国特色社会主义概论',86,50,75],
+    ['旅游政策法规',75,80,77],
+    ['政治经济学',64,65,64],
+    ['经济法',67,60,65],
+    ['劳动素养',100,90,97],
+    ['现代企业管理概论',60,60,60],
+  ],
+};
+function openScore(term){
+  term=term||TERMS[0];
+  const grades=SCORE_DATA[term]||[];
+  const body=`
+    <div class="term-bar">
+      <div class="term-sel" id="termSel">
+        <span>学期：</span><span class="tt">${term}</span>
+        <span class="down">${I.chev}</span>
+      </div>
+    </div>
+    ${grades.length?`
+    <div class="score-table">
+      <table>
+        <thead><tr><th>课程</th><th>期末成绩</th><th>平时成绩</th><th>最终成绩</th></tr></thead>
+        <tbody>
+          ${grades.map(([name,fin,usu,total])=>`<tr><td>${name}</td><td>${fin}</td><td>${usu}</td><td>${total}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:14px;font-size:12px;color:#999;text-align:center;">下拉刷新 · 数据来源于教务系统</div>
+    `:`<div class="empty-state">${I.empty}<p>该学期暂无成绩数据</p></div>`}
+  `;
+  openSub(lightShell('成绩查询',body));
+  bindBack();
+  $('#termSel').onclick=()=>{
+    const mask=document.createElement('div');
+    mask.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:900;display:flex;align-items:flex-start;justify-content:center;';
+    mask.innerHTML=`<div style="background:#fff;border-radius:10px;width:78%;margin-top:110px;max-height:60%;overflow-y:auto;">
+      ${TERMS.map(t=>`<div class="term-opt" data-t="${t}" style="padding:15px;text-align:center;font-size:15px;border-bottom:1px solid #f5f5f5;${t===term?'color:#165dff;font-weight:600;':'color:#333;'}">${t}</div>`).join('')}
+    </div>`;
+    $('#sub').appendChild(mask);
+    mask.onclick=()=>mask.remove();
+    mask.querySelectorAll('.term-opt').forEach(el=>el.onclick=(e)=>{e.stopPropagation();mask.remove();openScore(el.dataset.t);});
+  };
+}
+
+/* ===================== 我的信息（只读） ===================== */
+function openEditInfo(){
+  const u=ensureUser();
+  const rows=[
+    [I.usercard,'姓名：',REAL.name],
+    [I.gender,'性别：',REAL.gender],
+    [I.cake,'出生日期：',REAL.birthday],
+    [I.cert,'身份：',REAL.identity],
+  ];
+  const body=`
+    <div class="info-detail">
+      ${rows.map(([ic,lab,val])=>`
+        <div class="id-row">
+          <span class="ic">${ic}</span>
+          <span class="lab">${lab}</span>
+          <span class="val">${val}</span>
+        </div>`).join('')}
+    </div>
+  `;
+  openSub(lightShell('我的信息',body));
+  bindBack();
+}
+function openChangePwd(){
+  const body=`
+    <div class="bar-title">修改密码</div>
+    <div class="pill-fields" style="padding-top:14px;">
+      <div class="pill-field">
+        <span class="lab">原密码：</span>
+        <input id="p0" type="password" placeholder="请输入新密码">
+      </div>
+      <div class="pill-field">
+        <span class="lab">新密码：</span>
+        <input id="p1" type="password" placeholder="请输入新密码">
+      </div>
+      <div class="pill-field">
+        <span class="lab">确认密码：</span>
+        <input id="p2" type="password" placeholder="请输入确认密码">
+      </div>
+    </div>
+    <button class="blue-btn" id="pSubmit">提交修改</button>
+  `;
+  openSub(lightShell('修改密码',body));
+  bindBack();
+  $('#pSubmit').onclick=()=>{
+    const p0=$('#p0').value, p1=$('#p1').value, p2=$('#p2').value;
+    if(!p0){ toast('请输入原密码'); return; }
+    if(!p1){ toast('请输入新密码'); return; }
+    if(p1!==p2){ toast('两次密码不一致'); return; }
+    toast('密码修改成功');
+    setTimeout(()=>closeSub(),700);
+  };
+}
+
+/* ===================== 通知详情 ===================== */
+function openNewsDetail(id){
+  const news=store.get('news',[]);
+  const n=news.find(x=>x.id===id)||{title:'移动门户上线啦',date:'2026-09-01',body:'移动门户上线啦，敬请关注！！！'};
+  const body=`
+    <div class="article">
+      <h2>${n.title}</h2>
+      <div class="meta">发布时间：${n.date}　来源：学校办公室</div>
+      ${(n.body||n.desc).split('\n').map(p=>`<p>${p}</p>`).join('')}
+    </div>
+  `;
+  openSub(subShell('通知详情',body));
+  bindBack();
+}
+
+/* ===================== 帮助中心 ===================== */
+const HELP_DOC={
+  sure:{title:'学工信息确认操作手册',steps:['使用学号登录移动门户','进入“应用”页，找到“学工管理”中的“班级确认”','核对姓名、学号、专业等基本信息','选择招生类型，填写联系方式、家庭联系人、家庭电话和家庭住址','确认无误后点击“保存提交”','提示“提交成功”即完成信息确认']},
+  repair:{title:'学生报修操作手册',steps:['登录移动门户，进入“应用”页','在“宿舍管理”中点击“学生报修”','选择报修类型（水电、门窗、家具、网络等）','选择报修区域并填写详细地址','选择期望上门时间，填写问题描述','可补充备注，点击“保存提交”','等待维修人员上门处理']},
+  leave:{title:'学生请假申请指导手册',steps:['登录移动门户，进入“应用”页','在“学工管理”中点击“我的请假”','点击右上角“+ 请假申请”','选择请假类型（病假、事假等）','选择请假日期和上午/下午时段','填写请假事由，点击“保存提交”','在列表中可查看审核进度和当前审核人']},
+  change:{title:'学籍异动图文指导手册',steps:['登录移动门户，进入“应用”页','在“学工管理”中点击“学籍异动”','选择异动类型并按提示填写申请','按要求上传相关证明材料','提交后等待学院和学校审核','审核进度可在“我的申请”中查看']},
+};
+/* ===================== 社团列表 ===================== */
+function openClub(){
+  const clubs=[
+    {name:'音乐社团',short:'音乐社团',type:'娱乐',credit:5},
+    {name:'武术社团',short:'武术社团',type:'运动',credit:5},
+  ];
+  const body=`
+    <div style="padding-top:2px;">
+      ${clubs.map((c,i)=>`
+        <div class="mass-card" data-i="${i}">
+          <div class="mc-top">
+            <span class="n">社团名称：${c.name}</span>
+            <span class="d">社团详情 ›</span>
+          </div>
+          <div class="mc-row"><span>社团简称：</span><span>${c.short}</span></div>
+          <div class="mc-row"><span>社团类型：</span><span>${c.type}</span></div>
+          <div class="mc-row"><span>学分：</span><span>${c.credit}</span></div>
+        </div>`).join('')}
+    </div>
+  `;
+  openSub(lightShell('社团列表',body));
+  bindBack();
+  document.querySelectorAll('.mass-card').forEach(el=>{
+    el.onclick=()=>toast('社团详情功能演示');
+  });
+}
+
+/* ===================== 学籍异动 ===================== */
+function openChange(){
+  const html=`
+    <div class="sub-page">
+      <div class="sub-nav" style="background:transparent;box-shadow:none;color:#333;">
+        <div class="back" id="subBack" style="color:#333;">${I.back}</div>
+        <div class="nav-title" style="color:#333;position:static;transform:none;margin-left:4px;">学籍异动</div>
+      </div>
+      <div class="sub-body">
+        <div class="empty-state">${I.searchEmpty}<p>~空空如也~</p></div>
+      </div>
+      <button class="fab" id="fabAdd">${I.plus}</button>
+    </div>`;
+  openSub(html);
+  bindBack();
+  $('#fabAdd').onclick=()=>toast('异动申请功能演示');
+}
+
+function openHelp(key){
+  const doc=HELP_DOC[key]||{title:'帮助中心',steps:['请在“我的”页面选择需要查看的操作手册，包括信息确认、报修、学生请假和学籍异动等。']};
+  const body=`
+    <div class="article">
+      <h2>${doc.title}</h2>
+      <div class="meta">文档展示 · 学生版</div>
+      ${doc.steps.map((s,i)=>`<p><b>步骤 ${i+1}：</b>${s}</p>`).join('')}
+      <p style="color:#999;font-size:13px;">如在操作中遇到问题，请联系网络信息中心或辅导员。</p>
+    </div>
+  `;
+  openSub(subShell('帮助中心',body));
+  bindBack();
+  // 隐藏彩蛋：信息确认手册里连点“步骤5”三下，自动通过全部审批
+  if(key==='sure'){
+    let taps=0,timer;
+    const steps=document.querySelectorAll('.article p');
+    const fifth=steps[4];
+    if(fifth){
+      fifth.style.cursor='pointer';
+      fifth.onclick=()=>{
+        taps++;
+        clearTimeout(timer);
+        timer=setTimeout(()=>{taps=0;},1500);
+        if(taps>=3){ taps=0; approveAll(); }
+      };
+    }
+  }
+}
+// 自动通过全部待审批的请假与报修
+function approveAll(){
+  const leaves=store.get('leaves',defaultLeaves());
+  leaves.forEach(l=>{ if(l.status!=='审批通过') l.status='审批通过'; });
+  store.set('leaves',leaves);
+  const reps=store.get('repairs',defaultRepairs());
+  reps.forEach(r=>{ if(r.status!=='审批通过') r.status='审批通过'; });
+  store.set('repairs',reps);
+  toast('审批已自动通过');
+}
+function statusBadge(s){
+  let c='#165dff';
+  if(/通过/.test(s)) c='#22a06b';
+  else if(s==='流程中') c='#f0a030';
+  return `<b style="color:${c};font-weight:600;">${s}</b>`;
+}
+
+/* ===================== 更新头像 ===================== */
+function openAvatar(){
+  requireLogin(()=>{
+    const u=user();
+    const body=`
+      <div style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;">
+        <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center;margin-bottom:20px;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.12);">
+          ${u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="color:#bbb;">${I.user.replace('width:24','width:70').replace('height:24','height:70')}</span>`}
+        </div>
+        <p style="font-size:13px;color:#888;margin-bottom:20px;text-align:center;">上传清晰正脸头像，用于门禁出入识别</p>
+        <input type="file" id="avFile" accept="image/*" style="display:none;">
+        <button id="avPick" style="width:80%;height:44px;border:none;border-radius:22px;background:var(--primary);color:#fff;font-size:15px;margin-bottom:12px;">选择图片</button>
+        <button id="avSave" style="width:80%;height:44px;border:1px solid var(--primary);color:var(--primary);border-radius:22px;background:#fff;font-size:15px;">保存头像</button>
+      </div>
+    `;
+    openSub(subShell('更新头像',body));
+    bindBack();
+    let dataUrl='';
+    $('#avPick').onclick=()=>$('#avFile').click();
+    $('#avFile').onchange=(e)=>{
+      const f=e.target.files[0]; if(!f) return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        dataUrl=reader.result;
+        const box=document.querySelector('.sub-body > div > div');
+        box.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+      };
+      reader.readAsDataURL(f);
+    };
+    $('#avSave').onclick=()=>{
+      if(!dataUrl){ toast('请选择图片'); return; }
+      const nu=Object.assign({},u,{avatar:dataUrl});
+      store.set('user',nu);
+      toast('头像保存成功');
+      setTimeout(()=>{ closeSub(); renderPage(); },700);
+    };
+  });
+}
+
+/* ===================== 页面切换加载延迟 ===================== */
+const PAGE_DELAY=500;                 // 普通页面 0.5 秒
+const LEAVE_DELAY=1500;               // 请假相关页面 1.5 秒
+const LEAVE_FNS=['openLeaveList','openLeaveForm','openLeaveDetail'];
+let pageTimer=0;
+function showLoading(){ const el=$('#loading'); if(el) el.classList.add('on'); }
+function hideLoading(){ const el=$('#loading'); if(el) el.classList.remove('on'); }
+(function(){
+  const names=['switchTab','openLogin','openTaskList','openLeaveList','openLeaveDetail','openLeaveForm',
+    'openRepair','openRepairDetail','openRepairForm','openSure','openPhoneBook','openCalendar','openSchedule',
+    'openScore','openEditInfo','openChangePwd','openNewsDetail','openClub','openChange','openHelp','openAvatar'];
+  names.forEach(n=>{
+    const orig=window[n];
+    if(typeof orig!=='function') return;
+    const wait=LEAVE_FNS.indexOf(n)>=0?LEAVE_DELAY:PAGE_DELAY;
+    window[n]=function(){
+      const self=this, args=arguments;
+      showLoading();
+      clearTimeout(pageTimer);
+      pageTimer=setTimeout(()=>{ hideLoading(); orig.apply(self,args); },wait);
+    };
+  });
+})();
+
+/* ===================== 初始化 ===================== */
+// iOS Safari 地址栏动态高度修正（1vh 会含地址栏，用 --vh 精确算）
+(function(){
+  function setVH(){
+    const h=(window.visualViewport?window.visualViewport.height:window.innerHeight)||window.innerHeight;
+    document.documentElement.style.setProperty('--vh',(h/100)+'px');
+  }
+  setVH();
+  window.addEventListener('resize',setVH);
+  window.addEventListener('orientationchange',()=>setTimeout(setVH,300));
+  if(window.visualViewport) window.visualViewport.addEventListener('resize',setVH);
+})();
+
+// iOS 键盘弹出后把当前输入框滚进可见区域（否则下方字段被键盘挡住）
+(function(){
+  function scrollParent(el){
+    let p=el.parentElement;
+    while(p && p!==document.body){
+      const st=getComputedStyle(p);
+      if(/(auto|scroll)/.test(st.overflowY) && p.scrollHeight>p.clientHeight+2) return p;
+      p=p.parentElement;
+    }
+    return null;
+  }
+  function reveal(){
+    const el=document.activeElement;
+    if(!el||!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+    const vv=window.visualViewport;
+    const visTop=vv?vv.offsetTop:0;
+    const visBottom=vv?(vv.offsetTop+vv.height):window.innerHeight;
+    const pad=14;
+    let er=el.getBoundingClientRect();
+    const sc=scrollParent(el);
+    if(!sc){
+      if(er.bottom>visBottom-pad) window.scrollBy(0,er.bottom-visBottom+pad+8);
+      return;
+    }
+    const sr=sc.getBoundingClientRect();
+    const bottomLimit=Math.min(sr.bottom,visBottom-pad);
+    if(er.bottom>bottomLimit) sc.scrollTop += (er.bottom-bottomLimit)+8;
+    er=el.getBoundingClientRect();
+    const topLimit=Math.max(sr.top,visTop)+pad;
+    if(er.top<topLimit) sc.scrollTop -= (topLimit-er.top);
+  }
+  const isField=t=>t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+  document.addEventListener('focusin',e=>{
+    if(!isField(e.target)) return;
+    setTimeout(reveal,120);
+    setTimeout(reveal,420);
+    setTimeout(reveal,800);
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',()=>{
+      setTimeout(reveal,80);
+      setTimeout(reveal,300);
+    });
+  }
+})();
+renderTabbar();
+renderPage();
+
+</script>
+</body>
+</html>
