@@ -1422,7 +1422,7 @@ function openLeaveForm(editId){
     if(codeTimer) return;
     let n=60; codeTimer=1;
     const btn=$('#fCodeBtn');
-    toast('验证码已发送（演示：1234）');
+    toast('验证码已发送');
     const t=setInterval(()=>{ n--; btn.textContent=n+'s'; btn.style.opacity='.6'; if(n<=0){clearInterval(t);btn.textContent='获取验证码';btn.style.opacity='1';codeTimer=0;} },1000);
   }
   // 附件（模拟计数）
