@@ -207,6 +207,12 @@
     rgb(174,19,31) 18%, rgb(185,69,77) 33.3%, rgb(229,152,158) 41.7%, rgb(251,200,202) 50%,
     rgb(254,206,210) 66.7%, rgb(255,231,232) 83.3%, #fff 100%);
     background-size:100% 600px;background-repeat:no-repeat;min-height:100%;}
+  .done-wrap{background:#fff;min-height:100%;display:flex;flex-direction:column;align-items:center;padding-top:5.2rem;}
+  .done-circle{width:4.6rem;height:4.6rem;border-radius:50%;background:#07c160;display:flex;align-items:center;justify-content:center;}
+  .done-circle svg{width:2.6rem;height:2.6rem;}
+  .done-title{font-size:1.15rem;color:#333;margin-top:1.5rem;font-weight:500;}
+  .done-sub{font-size:.85rem;color:#999;margin-top:.7rem;}
+  .done-btn{margin-top:2.6rem;width:12.5rem;height:2.8rem;border:none;border-radius:1.4rem;background:#8f0626;color:#fff;font-size:.95rem;}
 .mine-wrap{padding:0 1.08rem;}
   .mine-profile{
     margin-top:40px;background:rgba(255,255,255,.95);border-radius:12px;
@@ -1359,6 +1365,18 @@ function genFlowNo(){
   const d=new Date(),p=n=>String(n).padStart(2,'0');
   return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}${String(Math.floor(Math.random()*9000+1000))}`;
 }
+function openLeaveDone(no){
+  openSub(`<div class="sub-page" style="background:#fff;">
+    <div class="done-wrap">
+      <div class="done-circle"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="done-title">提交成功</div>
+      <div class="done-sub">${no?'流程单号 '+no:'您的请假申请已提交，请等待审核'}</div>
+      <button class="done-btn" id="doneBack">返回</button>
+    </div>
+  </div>`);
+  const b=document.getElementById('doneBack');
+  if(b) b.onclick=()=>{ closeSub(); openLeaveList(); };
+}
 function openLeaveForm(editId){
   const u=user();
   const allLeaves=store.get('leaves',defaultLeaves());
@@ -1491,12 +1509,18 @@ function openLeaveForm(editId){
         leaves[idx]=Object.assign({},leaves[idx],{flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,phone,reason,attachCnt:cnt});
         toast('修改已保存');
       }else{
-        leaves.unshift({id:Date.now(),no:genFlowNo(),flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
-        toast('提交成功');
+        const n1=genFlowNo();
+        leaves.unshift({id:Date.now(),no:n1,flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
+        store.set('leaves',leaves);
+        store.set('user',Object.assign({},u,{phone}));
+        openLeaveDone(n1); return;
       }
     }else{
-      leaves.unshift({id:Date.now(),no:genFlowNo(),flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
-      toast('提交成功');
+      const n2=genFlowNo();
+      leaves.unshift({id:Date.now(),no:n2,flow,type,start,end,time:`${fmt(start)}~${fmt(end)}`,days:calcDays(start,end),status:'流程中',auditor:'刘乐',phone,reason,attachCnt:cnt});
+      store.set('leaves',leaves);
+      store.set('user',Object.assign({},u,{phone}));
+      openLeaveDone(n2); return;
     }
     store.set('leaves',leaves);
     store.set('user',Object.assign({},u,{phone}));
