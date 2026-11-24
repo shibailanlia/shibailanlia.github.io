@@ -7,8 +7,6 @@
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>智慧校园移动端</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- iOS 添加到主屏幕 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -30,10 +28,10 @@
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
-    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",Helvetica,sans-serif;
+    font-family:-apple-system-font,"Helvetica Neue",Helvetica,sans-serif;
     background:#e9e9ee;
     display:flex;justify-content:center;
-    color:#222;
+    color:#000;
   }
   /* 手机外壳 */
   #phone{
@@ -151,11 +149,11 @@
   .often-scroll-view::-webkit-scrollbar{display:none;}
   .often-scroll-view-const{display:inline-block;}
   .often-scroll-view-itme{
-    margin-left:1.25rem;width:auto;min-width:3.125rem;min-height:5.9375rem;padding:0 .1875rem;
+    margin-left:1.25rem;width:3.125rem;min-width:3.125rem;min-height:5.9375rem;padding:0;
     display:flex;justify-content:center;align-items:center;flex-direction:column;
   }
   .often-scroll-view-img{width:1.5625rem;height:1.5625rem;margin-bottom:.625rem;object-fit:contain;display:block;}
-  .often-scroll-view-itme-p{white-space:nowrap;width:auto;min-width:3.125rem;min-height:1.25rem;font-size:.75rem;text-align:center;line-height:normal;color:#333;margin:0;}
+  .often-scroll-view-itme-p{white-space:nowrap;width:3.125rem;min-width:3.125rem;min-height:1.25rem;font-size:.75rem;text-align:center;line-height:normal;color:#000;margin:0;}
   .scrllbar{height:.625rem;width:4.375rem;position:absolute;top:87%;left:40%;border-radius:.625rem;background:rgba(164,18,28,.1);}
   .scrllbar-background{border-radius:.625rem;height:.625rem;width:4.375rem;background:rgba(164,18,28,.9);transition:transform .1s ease-in-out;}
 
