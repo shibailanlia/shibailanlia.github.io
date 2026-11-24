@@ -295,6 +295,8 @@
 .set-cell:last-child{border-bottom:1px solid #f0f3f4;height:3.215rem;}
 .set-cell .ic{width:1.43rem;height:1.43rem;margin-right:.43rem;}
 .set-cell .ver{margin-left:auto;color:#666;font-size:.9375rem;}
+.set-blank{height:100vw;background:#fff;}
+.set-kefu{position:absolute;right:.284rem;bottom:6.9rem;width:1.607rem;height:1.607rem;border-radius:50%;z-index:5;}
 .sub-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
   /* 表单 */
@@ -1095,8 +1097,10 @@ function openSettings(){
     <div class="set-nav"><div class="back" id="subBack">${I.back}</div><div class="set-title">设置</div></div>
     <div class="set-list">
       <div class="set-cell" id="setClear"><img class="ic" src="../assets/real_weixiurenwu-OTFkAbd8.png" alt=""><span>点击清理学工缓存</span></div>
-      <div class="set-cell"><img class="ic" src="../assets/real_version-BDo9CG2R.png" alt=""><span>当前版本</span><span class="ver">1.0.0</span></div>
+      <div class="set-cell"><img class="ic" src="../assets/real_version-BDo9CG2R.png" alt=""><span>当前版本</span><span class="ver">1.0.5</span></div>
     </div>
+    <div class="set-blank"></div>
+    <img class="set-kefu" src="../assets/real_kefu_touxiang.png" alt="">
   </div>`);
   bindBack();
   const c=$('#setClear'); if(c) c.onclick=()=>{
