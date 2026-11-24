@@ -175,7 +175,7 @@
   .query-right-bottom img{position:absolute;width:3.75rem;height:2.5rem;bottom:0;right:0;}
 
   /* ========== 应用页 ========== */
-  .app-section{margin:14px;background:rgba(255,255,255,.92);border-radius:12px;padding:14px 6px 18px;}
+  .app-section{margin:.96rem;background:rgba(255,255,255,.92);border-radius:12px;padding:14px 7px 18px;}
   .app-section .sec-head{
     display:flex;align-items:center;justify-content:space-between;
     padding:4px 10px 12px;border-bottom:1px solid rgba(164,18,28,.18);margin-bottom:10px;
@@ -184,10 +184,10 @@
   .app-section .sec-head .ht svg{width:22px;height:22px;margin-right:8px;color:var(--primary);}
   .app-section .sec-head .help{font-size:14px;color:#1c6fd8;}
   .app-grid{display:flex;flex-wrap:wrap;}
-  .app-grid .a-item{width:25%;display:flex;flex-direction:column;align-items:center;padding:12px 0;}
-  .app-grid .a-item svg{width:34px;height:34px;}
-  .app-grid .a-item img.ic{width:34px;height:34px;object-fit:contain;}
-  .app-grid .a-item span{font-size:13px;margin-top:8px;color:#333;}
+  /* 与真实站 tui-grid 单元一致：85.8x82.2，图标 26，标签 12.48 纯黑 */
+  .app-grid .a-item{width:25%;height:4.94rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.9rem 0 0;box-sizing:border-box;}
+  .app-grid .a-item svg,.app-grid .a-item img.ic{width:1.5625rem;height:1.5625rem;flex:0 0 auto;object-fit:contain;}
+  .app-grid .a-item span{font-size:.75rem;line-height:normal;margin-top:.3rem;color:#000;white-space:nowrap;}
 
   /* ========== 资讯页 ========== */
   .news-wrap{padding:0 14px;}
@@ -923,24 +923,24 @@ function bindHome(){
 function rApps(){
   const groups=[
     {icon:I.layers,title:'学工管理',help:true,items:[
-      {icon:I.leave,name:'我的请假',act:'leave'},
+      {png:'qingjia',name:'我的请假',act:'leave'},
       {icon:I.confirm,name:'班级确认',act:'sure'},
-      {icon:I.club,name:'校园社团',act:'club'},
-      {icon:I.head,name:'更新头像',act:'avatar'},
-      {icon:I.cap,name:'学籍异动',act:'change'},
+      {png:'shetuan',name:'校园社团',act:'club'},
+      {png:'avatar',name:'更新头像',act:'avatar'},
+      {png:'xueji',name:'学籍异动',act:'change'},
     ]},
     {icon:I.building,title:'宿舍管理',items:[
-      {icon:I.gearwrench,name:'学生报修',act:'repair'},
+      {png:'baoxiu',name:'学生报修',act:'repair'},
     ]},
     {icon:I.water,title:'日常生活',items:[
-      {icon:I.flash,name:'电表缴费',act:'dianbiao'},
-      {icon:I.card,name:'一卡通充值',act:'yikatong'},
+      {png:'dianbiao',name:'电表缴费',act:'dianbiao'},
+      {png:'yikatong',name:'一卡通充值',act:'yikatong'},
       {icon:I.houseyen,name:'学宿费',act:'xuesufei'},
       {icon:I.yen,name:'其它费用',act:'qitafei'},
     ]},
     {icon:I.docs,title:'教务管理',items:[
-      {icon:I.grid,name:'课程表',act:'schedule'},
-      {icon:I.score,name:'成绩查询',act:'score'},
+      {png:'kebiao',name:'课程表',act:'schedule'},
+      {png:'chengjidan-',name:'成绩查询',act:'score'},
     ]},
   ];
   return `
@@ -955,7 +955,7 @@ function rApps(){
         ${g.help?'<div class="help" data-help><span style="margin-right:2px;">👉</span>查看帮助</div>':''}
       </div>
       <div class="app-grid">
-        ${g.items.map(it=>`<div class="a-item" data-act="${it.act}">${it.icon}<span>${it.name}</span></div>`).join('')}
+        ${g.items.map(it=>`<div class="a-item" data-act="${it.act}">${it.png?`<img class="ic" src="../assets/${it.png}.png" alt="">`:it.icon}<span>${it.name}</span></div>`).join('')}
       </div>
     </div>`).join('')}
   `;
